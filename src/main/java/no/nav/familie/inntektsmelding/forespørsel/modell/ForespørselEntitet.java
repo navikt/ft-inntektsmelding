@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
@@ -14,8 +16,12 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import no.nav.familie.inntektsmelding.integrasjoner.arbeidsgivernotifikasjon.Sak;
+import no.nav.familie.inntektsmelding.koder.ForespørselStatus;
 import no.nav.familie.inntektsmelding.koder.SakStatus;
 import no.nav.familie.inntektsmelding.koder.Ytelsetype;
 import no.nav.familie.inntektsmelding.typer.entitet.AktørIdEntitet;
@@ -31,32 +37,19 @@ public class ForespørselEntitet {
     @Column(name = "uuid", nullable = false, updatable = false)
     private UUID uuid;
 
-    @Column(name = "sak_id")
-    private String sakId;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "INTERN_SAK_ID", nullable = false, updatable = false)
+    private SakEntitet sak;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "sak_status", nullable = false, updatable = false)
-    private SakStatus sakStatus = SakStatus.UNDER_BEHANDLING;
+    @Column(name = "FORESPOERSEL_STATUS", nullable = false, updatable = false)
+    private ForespørselStatus forespørselStatus = ForespørselStatus.NY;
 
     @Column(name = "oppgave_id")
     private String oppgaveId;
 
-    @Column(name = "orgnr", nullable = false, updatable = false)
-    private String organisasjonsnummer;
-
     @Column(name = "skjaeringstidspunkt", nullable = false, updatable = false)
     private LocalDate skjæringstidspunkt;
-
-    @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "aktørId", column = @Column(name = "bruker_aktoer_id", nullable = false, updatable = false)))
-    private AktørIdEntitet aktørId;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "ytelse_type", nullable = false, updatable = false)
-    private Ytelsetype ytelseType;
-
-    @Column(name = "fagsystem_saksnummer", nullable = false, updatable = false)
-    private String fagsystemSaksnummer;
 
     @Column(name = "opprettet_tid", nullable = false, updatable = false)
     private LocalDateTime opprettetTidspunkt = LocalDateTime.now();
@@ -64,17 +57,10 @@ public class ForespørselEntitet {
     @Column(name = "endret_tid")
     private LocalDateTime endretTidspunkt;
 
-    public ForespørselEntitet(String organisasjonsnummer,
-                              LocalDate skjæringstidspunkt,
-                              AktørIdEntitet aktørId,
-                              Ytelsetype ytelseType,
-                              String fagsystemSaksnummer) {
+    public ForespørselEntitet(SakEntitet sakEntitet, LocalDate skjæringstidspunkt) {
         this.uuid = UUID.randomUUID();
-        this.organisasjonsnummer = organisasjonsnummer;
         this.skjæringstidspunkt = skjæringstidspunkt;
-        this.aktørId = aktørId;
-        this.ytelseType = ytelseType;
-        this.fagsystemSaksnummer = fagsystemSaksnummer;
+        this.sak = sakEntitet;
     }
 
     public ForespørselEntitet() {
@@ -93,21 +79,7 @@ public class ForespørselEntitet {
         return uuid;
     }
 
-    public String getSakId() {
-        return sakId;
-    }
 
-    void setSakId(String sakId) {
-        this.sakId = sakId;
-    }
-
-    public SakStatus getSakStatus() {
-        return sakStatus;
-    }
-
-    public void setSakStatus(SakStatus sakStatus) {
-        this.sakStatus = sakStatus;
-    }
 
     public String getOppgaveId() {
         return oppgaveId;
@@ -117,23 +89,24 @@ public class ForespørselEntitet {
         this.oppgaveId = oppgaveId;
     }
 
-    public String getOrganisasjonsnummer() {
-        return organisasjonsnummer;
-    }
 
     public LocalDate getSkjæringstidspunkt() {
         return skjæringstidspunkt;
     }
 
-    public AktørIdEntitet getAktørId() {
-        return aktørId;
+    public ForespørselStatus getForespørselStatus() {
+        return forespørselStatus;
     }
 
-    public Ytelsetype getYtelseType() {
-        return ytelseType;
+    void setForespørselStatus(ForespørselStatus forespørselStatus) {
+        this.forespørselStatus = forespørselStatus;
     }
 
-    public String getFagsystemSaksnummer() {
-        return fagsystemSaksnummer;
+    public SakEntitet getSak() {
+        return sak;
+    }
+
+    void setSak(SakEntitet sak) {
+        this.sak = sak;
     }
 }

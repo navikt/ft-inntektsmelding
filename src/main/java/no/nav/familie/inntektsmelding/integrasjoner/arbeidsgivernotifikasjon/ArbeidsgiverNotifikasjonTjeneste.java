@@ -64,7 +64,7 @@ class ArbeidsgiverNotifikasjonTjeneste implements ArbeidsgiverNotifikasjon {
         request.setTittel(saksTittel);
         request.setVirksomhetsnummer(virksomhetsnummer);
         request.setMerkelapp(merkelapp.getBeskrivelse());
-        request.setLenke(lenke.toString());
+        request.setLenke(lenke != null ? lenke.toString() : null);
         request.setInitiellStatus(SaksStatus.UNDER_BEHANDLING);
         request.setOverstyrStatustekstMed("NAV trenger inntektsmelding");
         request.setMottakere(List.of(new MottakerInput(new AltinnMottakerInput(SERVICE_CODE, SERVICE_EDITION_CODE), null)));

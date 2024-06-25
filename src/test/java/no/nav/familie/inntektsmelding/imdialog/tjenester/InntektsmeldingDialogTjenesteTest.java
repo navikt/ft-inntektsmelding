@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import no.nav.familie.inntektsmelding.forespørsel.modell.SakEntitet;
 import no.nav.vedtak.felles.prosesstask.api.ProsessTaskTjeneste;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -61,19 +62,20 @@ class InntektsmeldingDialogTjenesteTest {
     void skal_lage_dto() {
         // Arrange
         var uuid = UUID.randomUUID();
-        var forespørsel = new ForespørselEntitet("999999999", LocalDate.now(), new AktørIdEntitet("9999999999999"), Ytelsetype.FORELDREPENGER,
-            "123");
+        var sakEntitet = new SakEntitet("999999999", new AktørIdEntitet("9999999999999"), Ytelsetype.FORELDREPENGER, "SAKEN");
+        var forespørsel = new ForespørselEntitet(sakEntitet, LocalDate.now());
+
         when(forespørselBehandlingTjeneste.hentForespørsel(uuid))
             .thenReturn(Optional.of(forespørsel));
-        when(organisasjonTjeneste.finnOrganisasjon(forespørsel.getOrganisasjonsnummer()))
-            .thenReturn(new Organisasjon("Bedriften", forespørsel.getOrganisasjonsnummer()));
+        when(organisasjonTjeneste.finnOrganisasjon(forespørsel.getSak().getOrganisasjonsnummer()))
+            .thenReturn(new Organisasjon("Bedriften", forespørsel.getSak().getOrganisasjonsnummer()));
 
-        when(personTjeneste.hentPersonInfo(forespørsel.getAktørId(), forespørsel.getYtelseType()))
-            .thenReturn(new PersonInfo("Navn", null, "Navnesen", new PersonIdent("12121212122"), forespørsel.getAktørId(), LocalDate.now()));
-        var inntekt1 = new InntektTjeneste.Månedsinntekt(YearMonth.of(2024, 3), BigDecimal.valueOf(52000), forespørsel.getOrganisasjonsnummer());
-        var inntekt2 = new InntektTjeneste.Månedsinntekt(YearMonth.of(2024, 4), BigDecimal.valueOf(52000), forespørsel.getOrganisasjonsnummer());
-        var inntekt3 = new InntektTjeneste.Månedsinntekt(YearMonth.of(2024, 5), BigDecimal.valueOf(52000), forespørsel.getOrganisasjonsnummer());
-        when(inntektTjeneste.hentInntekt(forespørsel.getAktørId(), forespørsel.getSkjæringstidspunkt(), forespørsel.getOrganisasjonsnummer()))
+        when(personTjeneste.hentPersonInfo(forespørsel.getSak().getAktørId(), forespørsel.getSak().getYtelseType()))
+            .thenReturn(new PersonInfo("Navn", null, "Navnesen", new PersonIdent("12121212122"), forespørsel.getSak().getAktørId(), LocalDate.now()));
+        var inntekt1 = new InntektTjeneste.Månedsinntekt(YearMonth.of(2024, 3), BigDecimal.valueOf(52000), forespørsel.getSak().getOrganisasjonsnummer());
+        var inntekt2 = new InntektTjeneste.Månedsinntekt(YearMonth.of(2024, 4), BigDecimal.valueOf(52000), forespørsel.getSak().getOrganisasjonsnummer());
+        var inntekt3 = new InntektTjeneste.Månedsinntekt(YearMonth.of(2024, 5), BigDecimal.valueOf(52000), forespørsel.getSak().getOrganisasjonsnummer());
+        when(inntektTjeneste.hentInntekt(forespørsel.getSak().getAktørId(), forespørsel.getSkjæringstidspunkt(), forespørsel.getSak().getOrganisasjonsnummer()))
             .thenReturn(List.of(inntekt1, inntekt2, inntekt3));
 
         // Act
@@ -83,21 +85,21 @@ class InntektsmeldingDialogTjenesteTest {
         assertThat(imDialogDto.startdatoPermisjon()).isEqualTo(forespørsel.getSkjæringstidspunkt());
         assertThat(imDialogDto.ytelse()).isEqualTo(YtelseTypeDto.FORELDREPENGER);
 
-        assertThat(imDialogDto.person().aktørId()).isEqualTo(forespørsel.getAktørId().getAktørId());
+        assertThat(imDialogDto.person().aktørId()).isEqualTo(forespørsel.getSak().getAktørId().getAktørId());
         assertThat(imDialogDto.person().fornavn()).isEqualTo("Navn");
         assertThat(imDialogDto.person().etternavn()).isEqualTo("Navnesen");
 
         assertThat(imDialogDto.arbeidsgiver().organisasjonNavn()).isEqualTo("Bedriften");
-        assertThat(imDialogDto.arbeidsgiver().organisasjonNummer()).isEqualTo(forespørsel.getOrganisasjonsnummer());
+        assertThat(imDialogDto.arbeidsgiver().organisasjonNummer()).isEqualTo(forespørsel.getSak().getOrganisasjonsnummer());
 
         assertThat(imDialogDto.inntekter()).hasSize(3);
 
         assertThat(imDialogDto.inntekter())
-            .contains(new InntektsmeldingDialogDto.MånedsinntektResponsDto(LocalDate.of(2024,3,1), LocalDate.of(2024, 3, 31), BigDecimal.valueOf(52000), forespørsel.getOrganisasjonsnummer()));
+            .contains(new InntektsmeldingDialogDto.MånedsinntektResponsDto(LocalDate.of(2024,3,1), LocalDate.of(2024, 3, 31), BigDecimal.valueOf(52000), forespørsel.getSak().getOrganisasjonsnummer()));
         assertThat(imDialogDto.inntekter())
-            .contains(new InntektsmeldingDialogDto.MånedsinntektResponsDto(LocalDate.of(2024,4,1), LocalDate.of(2024, 4, 30), BigDecimal.valueOf(52000), forespørsel.getOrganisasjonsnummer()));
+            .contains(new InntektsmeldingDialogDto.MånedsinntektResponsDto(LocalDate.of(2024,4,1), LocalDate.of(2024, 4, 30), BigDecimal.valueOf(52000), forespørsel.getSak().getOrganisasjonsnummer()));
         assertThat(imDialogDto.inntekter())
-            .contains(new InntektsmeldingDialogDto.MånedsinntektResponsDto(LocalDate.of(2024,5,1), LocalDate.of(2024, 5, 31), BigDecimal.valueOf(52000), forespørsel.getOrganisasjonsnummer()));
+            .contains(new InntektsmeldingDialogDto.MånedsinntektResponsDto(LocalDate.of(2024,5,1), LocalDate.of(2024, 5, 31), BigDecimal.valueOf(52000), forespørsel.getSak().getOrganisasjonsnummer()));
     }
 
 

@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public class AktørIdEntitet {
     private static final Pattern VALID = Pattern.compile("^[0-9]{13}");
 
-    @Column(name = "aktoer_id")
+    @Column(name = "bruker_aktoer_id")
     private String aktørId;
 
     public AktørIdEntitet() {

@@ -15,11 +15,12 @@ import org.mockito.Mockito;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import no.nav.familie.inntektsmelding.database.JpaExtension;
-import no.nav.familie.inntektsmelding.forespørsel.modell.ForespørselRepository;
+import no.nav.familie.inntektsmelding.forespørsel.modell.ForespørselOgSakRepository;
 import no.nav.familie.inntektsmelding.integrasjoner.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjon;
 import no.nav.familie.inntektsmelding.integrasjoner.person.PersonIdent;
 import no.nav.familie.inntektsmelding.integrasjoner.person.PersonInfo;
 import no.nav.familie.inntektsmelding.integrasjoner.person.PersonTjeneste;
+import no.nav.familie.inntektsmelding.koder.ForespørselStatus;
 import no.nav.familie.inntektsmelding.koder.SakStatus;
 import no.nav.familie.inntektsmelding.koder.Ytelsetype;
 import no.nav.familie.inntektsmelding.typer.dto.OrganisasjonsnummerDto;
@@ -44,13 +45,13 @@ public class ForespørselBehandlingTjenesteImplTest {
     private EntityManager entityManager;
     private final ArbeidsgiverNotifikasjon arbeidsgiverNotifikasjon = Mockito.mock(ArbeidsgiverNotifikasjon.class);
     private final PersonTjeneste personTjeneste = Mockito.mock(PersonTjeneste.class);
-    private ForespørselRepository forespørselRepository;
+    private ForespørselOgSakRepository forespørselRepository;
     private ForespørselBehandlingTjenesteImpl forespørselBehandlingTjeneste;
 
 
     @BeforeEach
     public void setUp() {
-        this.forespørselRepository = new ForespørselRepository(entityManager);
+        this.forespørselRepository = new ForespørselOgSakRepository(entityManager);
         this.forespørselBehandlingTjeneste = new ForespørselBehandlingTjenesteImpl(new ForespørselTjeneste(forespørselRepository),
             arbeidsgiverNotifikasjon, personTjeneste);
 
@@ -71,37 +72,53 @@ public class ForespørselBehandlingTjenesteImplTest {
         forespørselBehandlingTjeneste.håndterInnkommendeForespørsel(SKJÆRINGSTIDSPUNKT, YTELSETYPE, new AktørIdEntitet(AKTØR_ID),
             new OrganisasjonsnummerDto(BRREG_ORGNUMMER), new SaksnummerDto(SAKSNUMMMER));
 
-        var lagret = forespørselRepository.hentForespørsler(new SaksnummerDto(SAKSNUMMMER));
+        var lagret = forespørselRepository.finnÅpenForespørsel(new AktørIdEntitet(AKTØR_ID), YTELSETYPE, BRREG_ORGNUMMER, SAKSNUMMMER, SKJÆRINGSTIDSPUNKT);
 
-        assertThat(lagret.size()).isEqualTo(1);
-        assertThat(lagret.getFirst().getSakId()).isEqualTo(SAK_ID);
-        assertThat(lagret.getFirst().getOppgaveId()).isEqualTo(OPPGAVE_ID);
+        assertThat(lagret.get().getSak().getFagerSakId()).isEqualTo(SAK_ID);
+        assertThat(lagret.get().getOppgaveId()).isEqualTo(OPPGAVE_ID);
     }
 
 
     @Test
     public void eksisterende_åpen_forespørsel_skal_gi_noop() {
+        forespørselRepository.opprettSak(Ytelsetype.PLEIEPENGER_SYKT_BARN, AKTØR_ID, BRREG_ORGNUMMER, SAKSNUMMMER);
         forespørselRepository.lagreForespørsel(SKJÆRINGSTIDSPUNKT, YTELSETYPE, AKTØR_ID, BRREG_ORGNUMMER, SAKSNUMMMER);
 
         forespørselBehandlingTjeneste.håndterInnkommendeForespørsel(SKJÆRINGSTIDSPUNKT, YTELSETYPE, new AktørIdEntitet(AKTØR_ID),
             new OrganisasjonsnummerDto(BRREG_ORGNUMMER), new SaksnummerDto(SAKSNUMMMER));
 
 
-        var lagret = forespørselRepository.hentForespørsler(new SaksnummerDto(SAKSNUMMMER));
-        assertThat(lagret.size()).isEqualTo(1);
+        var lagret = forespørselRepository.finnÅpenForespørsel(new AktørIdEntitet(AKTØR_ID), YTELSETYPE, BRREG_ORGNUMMER, SAKSNUMMMER, SKJÆRINGSTIDSPUNKT);
+        assertThat(lagret.isPresent()).isTrue();
     }
 
     @Test
-    public void skal_ferdigstille_forespørsel() {
+    public void skal_ferdigstille_forespørsel_og_sak() {
+        var sakEntitet = forespørselRepository.opprettSak(Ytelsetype.PLEIEPENGER_SYKT_BARN, AKTØR_ID, BRREG_ORGNUMMER, SAKSNUMMMER);
         var forespørselUuid = forespørselRepository.lagreForespørsel(SKJÆRINGSTIDSPUNKT, YTELSETYPE, AKTØR_ID, BRREG_ORGNUMMER, SAKSNUMMMER);
-        forespørselRepository.oppdaterSakId(forespørselUuid, SAK_ID);
+        forespørselRepository.oppdaterOppgaveId(forespørselUuid, OPPGAVE_ID);
+        forespørselRepository.oppdaterSakId(sakEntitet.getId(), SAK_ID);
 
         forespørselBehandlingTjeneste.ferdigstillForespørsel(forespørselUuid, new AktørIdEntitet(AKTØR_ID), new OrganisasjonsnummerDto(BRREG_ORGNUMMER),
             SKJÆRINGSTIDSPUNKT);
 
         var lagret = forespørselRepository.hentForespørsel(forespørselUuid);
-        assertThat(lagret.get().getSakStatus()).isEqualTo(SakStatus.FERDIG);
+        assertThat(lagret.get().getForespørselStatus()).isEqualTo(ForespørselStatus.UTFOERT);
+    }
 
+    @Test
+    public void skal_ferdigstille_sak() {
+        var sakEntitet = forespørselRepository.opprettSak(Ytelsetype.PLEIEPENGER_SYKT_BARN, AKTØR_ID, BRREG_ORGNUMMER, SAKSNUMMMER);
+        var forespørselUuid = forespørselRepository.lagreForespørsel(SKJÆRINGSTIDSPUNKT, YTELSETYPE, AKTØR_ID, BRREG_ORGNUMMER, SAKSNUMMMER);
+        forespørselRepository.oppdaterOppgaveId(forespørselUuid, OPPGAVE_ID);
+        forespørselRepository.oppdaterSakId(sakEntitet.getId(), SAK_ID);
+
+        forespørselBehandlingTjeneste.ferdigstillSak(new AktørIdEntitet(AKTØR_ID), new OrganisasjonsnummerDto(BRREG_ORGNUMMER),
+            Ytelsetype.PLEIEPENGER_SYKT_BARN,
+            new SaksnummerDto(SAKSNUMMMER));
+
+        var lagret = forespørselRepository.hentSak(sakEntitet.getId());
+        assertThat(lagret.getSakStatus()).isEqualTo(SakStatus.FERDIG);
     }
 
 }

@@ -29,27 +29,27 @@ import no.nav.familie.inntektsmelding.typer.entitet.AktørIdEntitet;
 
 @ApplicationScoped
 @Transactional
-@Path(ForespørselRest.BASE_PATH)
+@Path(ArbeidsgiverPortalRest.BASE_PATH)
 @Produces(MediaType.APPLICATION_JSON)
-public class ForespørselRest {
-    private static final Logger LOG = LoggerFactory.getLogger(ForespørselRest.class);
-    public static final String BASE_PATH = "/foresporsel";
+public class ArbeidsgiverPortalRest {
+    private static final Logger LOG = LoggerFactory.getLogger(ArbeidsgiverPortalRest.class);
+    public static final String BASE_PATH = "/portal";
 
     private ForespørselBehandlingTjeneste forespørselBehandlingTjeneste;
     private ForespørselTjeneste forespørselTjeneste;
 
-    public ForespørselRest() {
+    public ArbeidsgiverPortalRest() {
     }
 
     @Inject
-    public ForespørselRest(ForespørselBehandlingTjeneste forespørselBehandlingTjeneste, ForespørselTjeneste forespørselTjeneste) {
+    public ArbeidsgiverPortalRest(ForespørselBehandlingTjeneste forespørselBehandlingTjeneste, ForespørselTjeneste forespørselTjeneste) {
         this.forespørselBehandlingTjeneste = forespørselBehandlingTjeneste;
         this.forespørselTjeneste = forespørselTjeneste;
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/opprett")
+    @Path("/foresporsel/opprett")
     @Operation(description = "Oppretter en forespørsel om inntektsmelding", tags = "forespørsel")
     public Response opprettForespørsel(OpprettForespørselRequest request) {
         LOG.info("Mottok forespørsel om inntektsmeldingoppgave på saksnummer " + request.saksnummer());
@@ -58,27 +58,39 @@ public class ForespørselRest {
         return Response.ok().build();
     }
 
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/sak/ferdigstill")
+    @Operation(description = "Ferdigstiller en sak på min side arbeidsgiver", tags = "sak")
+    public Response ferdigstillSak(SakRequest request) {
+        forespørselBehandlingTjeneste.ferdigstillSak(new AktørIdEntitet(request.aktørId().id()),
+            new OrganisasjonsnummerDto(request.orgnummer().orgnr()), KodeverkMapper.mapYtelsetype(request.ytelsetype()), request.saksnummer());
+        return Response.ok().build();
+    }
+
+
     /**
      * @deprecated See på InntektsmeldingDialogRest.hentInnsendingsinfo()
      * @param forespørselUUID
      */
     @Deprecated(forRemoval = true, since = "18.06.2024")
     @GET
-    @Path("/{uuid}")
+    @Path("/foresporsel/{uuid}")
     @Operation(description = "Henter en forespørsel for gitt UUID", tags = "forespørsel")
     public Response readForespørsel(@PathParam("uuid") UUID forespørselUUID) {
-        return Response.ok(forespørselTjeneste.finnForespørsel(forespørselUUID).map(ForespørselRest::mapTilDto).orElseThrow()).build();
+        return Response.ok(forespørselTjeneste.finnForespørsel(forespørselUUID).map(ArbeidsgiverPortalRest::mapTilDto).orElseThrow()).build();
     }
 
     record ForespørselDto(UUID uuid, OrganisasjonsnummerDto organisasjonsnummer, LocalDate skjæringstidspunkt, AktørIdDto brukerAktørId, YtelseTypeDto ytelseType) {}
 
     static ForespørselDto mapTilDto(ForespørselEntitet entitet) {
+        var sak = entitet.getSak();
         return new ForespørselDto(
             entitet.getUuid(),
-            new OrganisasjonsnummerDto(entitet.getOrganisasjonsnummer()),
+            new OrganisasjonsnummerDto(sak.getOrganisasjonsnummer()),
             entitet.getSkjæringstidspunkt(),
-            new AktørIdDto(entitet.getAktørId().getAktørId()),
-            KodeverkMapper.mapYtelsetype(entitet.getYtelseType()));
+            new AktørIdDto(sak.getAktørId().getAktørId()),
+            KodeverkMapper.mapYtelsetype(sak.getYtelseType()));
     }
 }
 

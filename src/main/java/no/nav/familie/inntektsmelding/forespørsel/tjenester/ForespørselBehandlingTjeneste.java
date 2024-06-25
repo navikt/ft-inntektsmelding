@@ -20,5 +20,7 @@ public interface ForespørselBehandlingTjeneste {
 
     void ferdigstillForespørsel(UUID foresporselUuid, AktørIdEntitet aktorId, OrganisasjonsnummerDto organisasjonsnummerDto, LocalDate startdato);
 
+    void ferdigstillSak(AktørIdEntitet aktørId, OrganisasjonsnummerDto organisasjonsnummerDto, Ytelsetype ytelsetype, SaksnummerDto fagsakSaksnummer);
+
     Optional<ForespørselEntitet> hentForespørsel(UUID forespørselUUID);
 }

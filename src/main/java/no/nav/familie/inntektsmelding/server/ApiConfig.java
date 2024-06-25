@@ -6,14 +6,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import no.nav.familie.inntektsmelding.forvaltning.FagerTestRestTjeneste;
-
-import no.nav.familie.inntektsmelding.server.exceptions.ConstraintViolationMapper;
-import no.nav.familie.inntektsmelding.server.exceptions.GeneralRestExceptionMapper;
-import no.nav.familie.inntektsmelding.server.exceptions.JsonMappingExceptionMapper;
-import no.nav.familie.inntektsmelding.server.exceptions.JsonParseExceptionMapper;
-import no.nav.vedtak.felles.prosesstask.rest.ProsessTaskRestTjeneste;
-
 import org.glassfish.jersey.server.ServerProperties;
 
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
@@ -25,11 +17,17 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
-import no.nav.familie.inntektsmelding.forespørsel.rest.ForespørselRest;
+import no.nav.familie.inntektsmelding.forespørsel.rest.ArbeidsgiverPortalRest;
+import no.nav.familie.inntektsmelding.forvaltning.FagerTestRestTjeneste;
 import no.nav.familie.inntektsmelding.imdialog.rest.InntektsmeldingDialogRest;
+import no.nav.familie.inntektsmelding.server.exceptions.ConstraintViolationMapper;
+import no.nav.familie.inntektsmelding.server.exceptions.GeneralRestExceptionMapper;
+import no.nav.familie.inntektsmelding.server.exceptions.JsonMappingExceptionMapper;
+import no.nav.familie.inntektsmelding.server.exceptions.JsonParseExceptionMapper;
 import no.nav.familie.inntektsmelding.server.jackson.JacksonJsonConfig;
 import no.nav.foreldrepenger.konfig.Environment;
 import no.nav.vedtak.exception.TekniskException;
+import no.nav.vedtak.felles.prosesstask.rest.ProsessTaskRestTjeneste;
 
 @ApplicationPath(ApiConfig.API_URI)
 public class ApiConfig extends Application {
@@ -59,19 +57,10 @@ public class ApiConfig extends Application {
     @Override
     public Set<Class<?>> getClasses() {
         // eksponert grensesnitt bak sikkerhet
-        return Set.of(
-            AuthenticationFilter.class,
-            OpenApiResource.class,
-            JacksonJsonConfig.class,
-            GeneralRestExceptionMapper.class,
+        return Set.of(AuthenticationFilter.class, OpenApiResource.class, JacksonJsonConfig.class, GeneralRestExceptionMapper.class,
             // ExceptionMappers pga de som finnes i Jackson+Jersey-media
-            ConstraintViolationMapper.class,
-            JsonMappingExceptionMapper.class,
-            JsonParseExceptionMapper.class,
-            InntektsmeldingDialogRest.class,
-            ForespørselRest.class,
-            FagerTestRestTjeneste.class,
-            ProsessTaskRestTjeneste.class);
+            ConstraintViolationMapper.class, JsonMappingExceptionMapper.class, JsonParseExceptionMapper.class, InntektsmeldingDialogRest.class,
+            ArbeidsgiverPortalRest.class, FagerTestRestTjeneste.class, ProsessTaskRestTjeneste.class);
 
     }
 

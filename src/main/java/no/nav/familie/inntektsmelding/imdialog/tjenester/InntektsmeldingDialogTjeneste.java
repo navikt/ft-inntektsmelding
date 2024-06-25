@@ -3,20 +3,19 @@ package no.nav.familie.inntektsmelding.imdialog.tjenester;
 import java.util.List;
 import java.util.UUID;
 
-import no.nav.familie.inntektsmelding.imdialog.modell.InntektsmeldingEntitet;
-
-import no.nav.familie.inntektsmelding.imdialog.task.SendTilJoarkTask;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import no.nav.familie.inntektsmelding.forespørsel.modell.ForespørselEntitet;
+import no.nav.familie.inntektsmelding.forespørsel.modell.SakEntitet;
 import no.nav.familie.inntektsmelding.forespørsel.tjenester.ForespørselBehandlingTjeneste;
+import no.nav.familie.inntektsmelding.imdialog.modell.InntektsmeldingEntitet;
 import no.nav.familie.inntektsmelding.imdialog.modell.InntektsmeldingRepository;
 import no.nav.familie.inntektsmelding.imdialog.rest.InntektsmeldingDialogDto;
 import no.nav.familie.inntektsmelding.imdialog.rest.SendInntektsmeldingRequestDto;
+import no.nav.familie.inntektsmelding.imdialog.task.SendTilJoarkTask;
 import no.nav.familie.inntektsmelding.integrasjoner.inntektskomponent.InntektTjeneste;
 import no.nav.familie.inntektsmelding.integrasjoner.organisasjon.OrganisasjonTjeneste;
 import no.nav.familie.inntektsmelding.integrasjoner.person.PersonTjeneste;
@@ -75,11 +74,12 @@ public class InntektsmeldingDialogTjeneste {
     public InntektsmeldingDialogDto lagDialogDto(UUID forespørselUuid) {
         var forespørsel = forespørselBehandlingTjeneste.hentForespørsel(forespørselUuid)
             .orElseThrow(() -> new IllegalStateException("Prøver å hente data for en forespørsel som ikke finnes, forespørselUUID: " + forespørselUuid));
-        var personDto = lagPersonDto(forespørsel);
-        var organisasjonDto = lagOrganisasjonDto(forespørsel);
+        var personDto = lagPersonDto(forespørsel.getSak());
+        var organisasjonDto = lagOrganisasjonDto(forespørsel.getSak());
         var inntektDtoer = lagInntekterDto(forespørsel);
+        var sak = forespørsel.getSak();
         return new InntektsmeldingDialogDto(personDto, organisasjonDto, inntektDtoer,
-            forespørsel.getSkjæringstidspunkt(), KodeverkMapper.mapYtelsetype(forespørsel.getYtelseType()), forespørsel.getUuid());
+            forespørsel.getSkjæringstidspunkt(), KodeverkMapper.mapYtelsetype(sak.getYtelseType()), forespørsel.getUuid());
     }
 
     public InntektsmeldingEntitet hentInntektsmelding(int inntektsmeldingId) {
@@ -87,22 +87,23 @@ public class InntektsmeldingDialogTjeneste {
     }
 
     private List<InntektsmeldingDialogDto.MånedsinntektResponsDto> lagInntekterDto(ForespørselEntitet forespørsel) {
-        var inntekter = inntektTjeneste.hentInntekt(forespørsel.getAktørId(), forespørsel.getSkjæringstidspunkt(),
-            forespørsel.getOrganisasjonsnummer());
+        var sak = forespørsel.getSak();
+        var inntekter = inntektTjeneste.hentInntekt(sak.getAktørId(), forespørsel.getSkjæringstidspunkt(),
+            sak.getOrganisasjonsnummer());
         var inntektDtoer = inntekter.stream()
-            .map(i -> new InntektsmeldingDialogDto.MånedsinntektResponsDto(i.måned().atDay(1), i.måned().atEndOfMonth(), i.beløp(), forespørsel.getOrganisasjonsnummer()))
+            .map(i -> new InntektsmeldingDialogDto.MånedsinntektResponsDto(i.måned().atDay(1), i.måned().atEndOfMonth(), i.beløp(), sak.getOrganisasjonsnummer()))
             .toList();
         return inntektDtoer;
     }
 
-    private InntektsmeldingDialogDto.OrganisasjonInfoResponseDto lagOrganisasjonDto(ForespørselEntitet forespørsel) {
-        var orgdata = organisasjonTjeneste.finnOrganisasjon(forespørsel.getOrganisasjonsnummer());
+    private InntektsmeldingDialogDto.OrganisasjonInfoResponseDto lagOrganisasjonDto(SakEntitet sak) {
+        var orgdata = organisasjonTjeneste.finnOrganisasjon(sak.getOrganisasjonsnummer());
         var organisasjonDto = new InntektsmeldingDialogDto.OrganisasjonInfoResponseDto(orgdata.navn(), orgdata.orgnr());
         return organisasjonDto;
     }
 
-    private InntektsmeldingDialogDto.PersonInfoResponseDto lagPersonDto(ForespørselEntitet forespørsel) {
-        var persondata = personTjeneste.hentPersonInfo(forespørsel.getAktørId(), forespørsel.getYtelseType());
+    private InntektsmeldingDialogDto.PersonInfoResponseDto lagPersonDto(SakEntitet sak) {
+        var persondata = personTjeneste.hentPersonInfo(sak.getAktørId(), sak.getYtelseType());
         var personDto = new InntektsmeldingDialogDto.PersonInfoResponseDto(
             persondata.fornavn(),
             persondata.mellomnavn(),

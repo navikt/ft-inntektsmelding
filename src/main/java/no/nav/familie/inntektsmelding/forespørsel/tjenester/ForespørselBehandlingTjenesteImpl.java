@@ -54,41 +54,79 @@ class ForespørselBehandlingTjenesteImpl implements ForespørselBehandlingTjenes
                                               AktørIdEntitet aktørId,
                                               OrganisasjonsnummerDto organisasjonsnummer,
                                               SaksnummerDto fagsakSaksnummer) {
-        var åpenForespørsel = forespørselTjeneste.finnÅpenForespørsel(skjæringstidspunkt, ytelsetype, aktørId, organisasjonsnummer);
+        var åpenForespørsel = forespørselTjeneste.finnÅpenForespørsel(skjæringstidspunkt, ytelsetype, aktørId, organisasjonsnummer,
+            fagsakSaksnummer.saksnr());
+
         if (åpenForespørsel.isPresent()) {
             var msg = String.format("Finnes allerede forespørsel for aktør %s på startdato %s + på ytelse %s", aktørId, skjæringstidspunkt,
                 ytelsetype);
             LOG.info(msg);
             return;
         }
+
+        opprettSakOmIngenÅpen(ytelsetype, aktørId, organisasjonsnummer, fagsakSaksnummer);
         var uuid = forespørselTjeneste.opprettForespørsel(skjæringstidspunkt, ytelsetype, aktørId, organisasjonsnummer, fagsakSaksnummer);
-        var person = personTjeneste.hentPersonInfo(aktørId, ytelsetype);
         var merkelapp = finnMerkelapp(ytelsetype);
         var skjemaUri = URI.create(inntektsmeldingSkjemaLenke + "/" + uuid);
-
-        var sakId = arbeidsgiverNotifikasjon.opprettSak(uuid.toString(), merkelapp, organisasjonsnummer.orgnr(), lagSaksTittel(person),
-            skjemaUri);
-
-        forespørselTjeneste.setSakId(uuid, sakId);
-
         var oppgaveId = arbeidsgiverNotifikasjon.opprettOppgave(uuid.toString(), merkelapp, uuid.toString(), organisasjonsnummer.orgnr(),
-            "NAV trenger inntektsmelding for å kunne behandle saken til din ansatt", skjemaUri);
-
+            "NAV trenger inntektsmelding for " + finnYtelseNavn(ytelsetype), skjemaUri);
         forespørselTjeneste.setOppgaveId(uuid, oppgaveId);
+
+    }
+
+    private String finnYtelseNavn(Ytelsetype ytelsetype) {
+        return switch (ytelsetype) {
+            case OMSORGSPENGER -> "omsorgspenger";
+            case FORELDREPENGER -> "foreldrepenger";
+            case PLEIEPENGER_SYKT_BARN -> "pleiepenger sykt barn";
+            case SVANGERSKAPSPENGER -> "svangerskapspenger";
+            case OPPLÆRINGSPENGER -> "opplæringspenger";
+            case PLEIEPENGER_NÆRSTÅENDE -> "pleiepenger i livets sluttfase";
+        };
+    }
+
+    private void opprettSakOmIngenÅpen(Ytelsetype ytelsetype,
+                                       AktørIdEntitet aktørId,
+                                       OrganisasjonsnummerDto organisasjonsnummer,
+                                       SaksnummerDto fagsakSaksnummer) {
+        var sak = forespørselTjeneste.finnSakUnderBehandling(ytelsetype, aktørId, organisasjonsnummer, fagsakSaksnummer);
+        if (sak.isEmpty()) {
+            var person = personTjeneste.hentPersonInfo(aktørId, ytelsetype);
+            var merkelapp = finnMerkelapp(ytelsetype);
+            var sakEntitet = forespørselTjeneste.opprettSak(ytelsetype, aktørId, organisasjonsnummer, fagsakSaksnummer);
+            var sakId = arbeidsgiverNotifikasjon.opprettSak(sakEntitet.getGrupperingUuid().toString(), merkelapp, organisasjonsnummer.orgnr(),
+                lagSaksTittel(person), null);
+            forespørselTjeneste.setFagerSakId(sakEntitet.getId(), sakId);
+        }
     }
 
     @Override
-    public void ferdigstillForespørsel(UUID foresporselUuid, AktørIdEntitet aktorId, OrganisasjonsnummerDto organisasjonsnummerDto, LocalDate startdato) {
+    public void ferdigstillForespørsel(UUID foresporselUuid,
+                                       AktørIdEntitet aktorId,
+                                       OrganisasjonsnummerDto organisasjonsnummerDto,
+                                       LocalDate startdato) {
         var foresporsel = forespørselTjeneste.finnForespørsel(foresporselUuid)
             .orElseThrow(() -> new IllegalStateException("Finner ikke forespørsel for inntektsmelding, ugyldig tilstand"));
-
         validerAktør(foresporsel, aktorId);
         validerOrganisasjon(foresporsel, organisasjonsnummerDto);
         validerStartdato(foresporsel, startdato);
 
         arbeidsgiverNotifikasjon.lukkOppgave(foresporsel.getOppgaveId(), OffsetDateTime.now());
-        arbeidsgiverNotifikasjon.ferdigstillSak(foresporsel.getSakId()); // Oppdaterer status i arbeidsgiver-notifikasjon
-        forespørselTjeneste.ferdigstillSak(foresporsel.getSakId()); // Oppdaterer status i forespørsel
+        forespørselTjeneste.utførForespørsel(foresporselUuid);
+
+    }
+
+    @Override
+    public void ferdigstillSak(AktørIdEntitet aktørId,
+                               OrganisasjonsnummerDto organisasjonsnummerDto,
+                               Ytelsetype ytelsetype,
+                               SaksnummerDto fagsakSaksnummer) {
+        var sak = forespørselTjeneste.finnSakUnderBehandling(ytelsetype, aktørId, organisasjonsnummerDto, fagsakSaksnummer);
+        if (sak.isEmpty()) {
+            throw new IllegalStateException("Fant ingen sak for ferdigsilling");
+        }
+        arbeidsgiverNotifikasjon.ferdigstillSak(sak.get().getFagerSakId()); // Oppdaterer status i arbeidsgiver-notifikasjon
+        forespørselTjeneste.ferdigstillSak(sak.get().getId()); // Oppdaterer vår status
     }
 
     @Override
@@ -103,13 +141,13 @@ class ForespørselBehandlingTjenesteImpl implements ForespørselBehandlingTjenes
     }
 
     private void validerOrganisasjon(ForespørselEntitet forespørsel, OrganisasjonsnummerDto orgnummer) {
-        if (!forespørsel.getOrganisasjonsnummer().equals(orgnummer.orgnr())) {
+        if (!forespørsel.getSak().getOrganisasjonsnummer().equals(orgnummer.orgnr())) {
             throw new IllegalStateException("Organisasjonsnummer var ikke like");
         }
     }
 
     private void validerAktør(ForespørselEntitet forespørsel, AktørIdEntitet aktorId) {
-        if (!forespørsel.getAktørId().equals(aktorId)) {
+        if (!forespørsel.getSak().getAktørId().equals(aktorId)) {
             throw new IllegalStateException("AktørId for bruker var ikke like");
         }
     }

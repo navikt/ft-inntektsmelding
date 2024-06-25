@@ -7,12 +7,14 @@
 
 
     <sequence-generator name="SEQ_FORESPOERSEL" allocation-size="50" sequence-name="SEQ_FORESPOERSEL" />
+    <sequence-generator name="SEQ_SAK" allocation-size="50" sequence-name="SEQ_SAK" />
     <sequence-generator name="SEQ_NATURALYTELSE" allocation-size="50" sequence-name="SEQ_NATURALYTELSE" />
     <sequence-generator name="SEQ_REFUSJON_PERIODE" allocation-size="50" sequence-name="SEQ_REFUSJON_PERIODE" />
     <sequence-generator name="SEQ_KONTAKTPERSON" allocation-size="50" sequence-name="SEQ_KONTAKTPERSON" />
     <sequence-generator name="SEQ_INNTEKTSMELDING" allocation-size="50" sequence-name="SEQ_INNTEKTSMELDING" />
 
     <entity class="no.nav.familie.inntektsmelding.forespørsel.modell.ForespørselEntitet"/>
+    <entity class="no.nav.familie.inntektsmelding.forespørsel.modell.SakEntitet"/>
     <entity class="no.nav.familie.inntektsmelding.imdialog.modell.NaturalytelseEntitet"/>
     <entity class="no.nav.familie.inntektsmelding.imdialog.modell.RefusjonPeriodeEntitet"/>
     <entity class="no.nav.familie.inntektsmelding.imdialog.modell.KontaktpersonEntitet"/>

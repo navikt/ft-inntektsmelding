@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.UriBuilder;
 
 import no.nav.vedtak.exception.IntegrasjonException;
@@ -15,7 +14,6 @@ import no.nav.vedtak.felles.integrasjon.rest.RestRequest;
 import no.nav.vedtak.felles.integrasjon.rest.TokenFlow;
 import no.nav.vedtak.sikkerhet.kontekst.KontekstHolder;
 
-@ApplicationScoped
 @RestClientConfig(tokenConfig = TokenFlow.ADAPTIVE, endpointProperty = "altinn.url", scopesProperty = "altinn.scopes")
 public class AltinnAutoriseringKlient {
     private static final String SERVICE_CODE = "4936";
@@ -30,20 +28,32 @@ public class AltinnAutoriseringKlient {
      */
     private static final int ALTINN_TOTAL_SIZE_LIMIT = 100_000;
 
+    private static AltinnAutoriseringKlient INSTANCE = new AltinnAutoriseringKlient();
+
     private final RestClient restClient;
     private final RestConfig restConfig;
 
-    public AltinnAutoriseringKlient() {
+
+    private AltinnAutoriseringKlient() {
         this(RestClient.client());
     }
 
-    public AltinnAutoriseringKlient(RestClient restClient) {
+    AltinnAutoriseringKlient(RestClient restClient) {
         this.restClient = restClient;
         this.restConfig = RestConfig.forClient(this.getClass());
     }
 
+    public static synchronized AltinnAutoriseringKlient instance() {
+        var inst = INSTANCE;
+        if (inst == null) {
+            inst = new AltinnAutoriseringKlient();
+            INSTANCE = inst;
+        }
+        return inst;
+    }
+
     public void sjekkTilgang(String orgnr) {
-        List<AltinnReportee> altinnReportees = gjørKallMedPagineringOgRetry();
+        var altinnReportees = gjørKallMedPagineringOgRetry();
 
         if (altinnReportees.stream().noneMatch(reportee -> orgnr.equals(reportee.organizationNumber()))) {
             throw new RuntimeException("Innlogget bruker har ikke tilgang til organisasjon");
@@ -55,7 +65,7 @@ public class AltinnAutoriseringKlient {
 
         int skip = 0;
         while (skip < ALTINN_TOTAL_SIZE_LIMIT) {
-            List<AltinnReportee> respons = gjørKall(skip);
+            var respons = gjørKall(skip);
             altinnReportees.addAll(respons);
 
             if (respons.size() < ALTINN_SIZE_LIMIT) {

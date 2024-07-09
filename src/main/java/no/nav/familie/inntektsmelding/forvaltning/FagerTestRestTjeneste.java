@@ -26,6 +26,7 @@ import no.nav.familie.inntektsmelding.forespørsel.rest.OpprettForespørselReque
 import no.nav.familie.inntektsmelding.integrasjoner.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjon;
 import no.nav.familie.inntektsmelding.integrasjoner.arbeidsgivernotifikasjon.Merkelapp;
 import no.nav.familie.inntektsmelding.integrasjoner.arbeidsgivernotifikasjon.SaksStatus;
+import no.nav.familie.inntektsmelding.server.auth.Autentisert;
 import no.nav.familie.inntektsmelding.typer.dto.YtelseTypeDto;
 import no.nav.foreldrepenger.konfig.Environment;
 import no.nav.foreldrepenger.konfig.KonfigVerdi;
@@ -40,6 +41,7 @@ import no.nav.vedtak.exception.ManglerTilgangException;
 @Transactional
 @Path(FagerTestRestTjeneste.BASE_PATH)
 @Produces(MediaType.APPLICATION_JSON)
+@Autentisert
 public class FagerTestRestTjeneste {
     private static final Logger LOG = LoggerFactory.getLogger(FagerTestRestTjeneste.class);
     private static final boolean IS_PROD = Environment.current().isProd();

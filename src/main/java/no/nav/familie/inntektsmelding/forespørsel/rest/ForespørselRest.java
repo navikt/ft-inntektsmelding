@@ -22,6 +22,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import no.nav.familie.inntektsmelding.forespørsel.modell.ForespørselEntitet;
 import no.nav.familie.inntektsmelding.forespørsel.tjenester.ForespørselBehandlingTjeneste;
 import no.nav.familie.inntektsmelding.forespørsel.tjenester.ForespørselTjeneste;
+import no.nav.familie.inntektsmelding.server.auth.Autentisert;
 import no.nav.familie.inntektsmelding.typer.dto.AktørIdDto;
 import no.nav.familie.inntektsmelding.typer.dto.KodeverkMapper;
 import no.nav.familie.inntektsmelding.typer.dto.OrganisasjonsnummerDto;
@@ -32,6 +33,7 @@ import no.nav.familie.inntektsmelding.typer.entitet.AktørIdEntitet;
 @Transactional
 @Path(ForespørselRest.BASE_PATH)
 @Produces(MediaType.APPLICATION_JSON)
+@Autentisert
 public class ForespørselRest {
     private static final Logger LOG = LoggerFactory.getLogger(ForespørselRest.class);
     public static final String BASE_PATH = "/foresporsel";

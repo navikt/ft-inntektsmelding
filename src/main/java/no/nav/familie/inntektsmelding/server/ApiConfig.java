@@ -25,6 +25,7 @@ import no.nav.familie.inntektsmelding.forespørsel.rest.ForespørselRest;
 import no.nav.familie.inntektsmelding.forvaltning.FagerTestRestTjeneste;
 import no.nav.familie.inntektsmelding.forvaltning.FpDokgenRestTjeneste;
 import no.nav.familie.inntektsmelding.imdialog.rest.InntektsmeldingDialogRest;
+import no.nav.familie.inntektsmelding.server.auth.AuthenticationFilter;
 import no.nav.familie.inntektsmelding.server.exceptions.ConstraintViolationMapper;
 import no.nav.familie.inntektsmelding.server.exceptions.GeneralRestExceptionMapper;
 import no.nav.familie.inntektsmelding.server.exceptions.JsonMappingExceptionMapper;

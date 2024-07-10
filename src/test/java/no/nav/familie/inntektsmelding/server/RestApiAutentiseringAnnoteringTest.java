@@ -10,8 +10,8 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import no.nav.familie.inntektsmelding.server.auth.Autentisert;
-import no.nav.familie.inntektsmelding.server.auth.AutentisertMed;
+import no.nav.familie.inntektsmelding.server.auth.api.Autentisert;
+import no.nav.familie.inntektsmelding.server.auth.api.AutentisertMed;
 import no.nav.vedtak.sikkerhet.jaxrs.UtenAutentisering;
 
 /**

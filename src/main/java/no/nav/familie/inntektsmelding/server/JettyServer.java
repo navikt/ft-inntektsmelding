@@ -1,8 +1,10 @@
 package no.nav.familie.inntektsmelding.server;
 
+import java.util.EnumSet;
 import java.util.Properties;
+import java.util.Set;
 
-import jakarta.ws.rs.core.Application;
+import jakarta.servlet.DispatcherType;
 
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -10,6 +12,7 @@ import javax.sql.DataSource;
 import org.eclipse.jetty.ee10.cdi.CdiDecoratingListener;
 import org.eclipse.jetty.ee10.cdi.CdiServletContainerInitializer;
 import org.eclipse.jetty.ee10.servlet.DefaultServlet;
+import org.eclipse.jetty.ee10.servlet.FilterHolder;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.ee10.servlet.security.ConstraintMapping;
@@ -27,13 +30,17 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import no.nav.familie.inntektsmelding.server.auth.config.MultiIssuerConfiguration;
+import no.nav.familie.inntektsmelding.server.auth.filter.JaxrsJwtTokenValidationFilter;
 import no.nav.foreldrepenger.konfig.Environment;
+import no.nav.vedtak.sikkerhet.oidc.config.OpenIDProvider;
 
 public class JettyServer {
     private static final Logger LOG = LoggerFactory.getLogger(JettyServer.class);
     private static final Environment ENV = Environment.current();
 
     private static final String CONTEXT_PATH = ENV.getProperty("context.path", "/fpinntektsmelding");
+    protected static final String APPLICATION = "jakarta.ws.rs.Application";
 
     private final Integer serverPort;
 
@@ -109,13 +116,16 @@ public class JettyServer {
             LOG.info("Starter server");
             var context = new ServletContextHandler(CONTEXT_PATH, ServletContextHandler.NO_SESSIONS);
 
+            // Sikkerhet
             context.setSecurityHandler(simpleConstraints());
+            registerAuthenticationFilter(context);
 
+            // Servlets
             registerDefaultServlet(context);
             registerServlet(context, 0, InternalApiConfig.API_URI, InternalApiConfig.class);
             registerServlet(context, 1, ApiConfig.API_URI, ApiConfig.class);
 
-            // Starter asynk tjenester
+            // Starter tjenester
             context.addEventListener(new ServiceStarterListener());
 
             // Enable Weld + CDI
@@ -135,16 +145,23 @@ public class JettyServer {
         }
     }
 
-    private void registerDefaultServlet(ServletContextHandler context) {
+    private static void registerDefaultServlet(ServletContextHandler context) {
         var defaultServlet = new ServletHolder(new DefaultServlet());
         context.addServlet(defaultServlet, "/*");
     }
 
-    static void registerServlet(ServletContextHandler context, int prioritet, String path, Class<?> appClass) {
+    private static void registerServlet(ServletContextHandler context, int prioritet, String path, Class<?> appClass) {
         var servlet = new ServletHolder(new ServletContainer());
         servlet.setInitOrder(prioritet);
-        servlet.setInitParameter(Application.class.getName(), appClass.getName());
+        servlet.setInitParameter(APPLICATION, appClass.getName());
         context.addServlet(servlet, path + "/*");
+    }
+
+    private static void registerAuthenticationFilter(ServletContextHandler context) {
+        var supportedIssuers = Set.of(OpenIDProvider.AZUREAD, OpenIDProvider.TOKENX);
+        var filter = new JaxrsJwtTokenValidationFilter(new MultiIssuerConfiguration(supportedIssuers));
+        var filterHolder = new FilterHolder(filter);
+        context.addFilter(filterHolder, "/*", EnumSet.of(DispatcherType.REQUEST));
     }
 
     private static ConstraintSecurityHandler simpleConstraints() {

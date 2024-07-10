@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import no.nav.familie.inntektsmelding.imdialog.tjenester.InntektsmeldingDialogTjeneste;
-import no.nav.familie.inntektsmelding.server.auth.AutentisertMed;
+import no.nav.familie.inntektsmelding.server.auth.api.AutentisertMed;
 import no.nav.vedtak.sikkerhet.oidc.config.OpenIDProvider;
 
 @Path(InntektsmeldingDialogRest.BASE_PATH)

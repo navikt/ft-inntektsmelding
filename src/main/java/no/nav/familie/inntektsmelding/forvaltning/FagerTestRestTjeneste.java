@@ -26,7 +26,7 @@ import no.nav.familie.inntektsmelding.forespørsel.rest.OpprettForespørselReque
 import no.nav.familie.inntektsmelding.integrasjoner.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjon;
 import no.nav.familie.inntektsmelding.integrasjoner.arbeidsgivernotifikasjon.Merkelapp;
 import no.nav.familie.inntektsmelding.integrasjoner.arbeidsgivernotifikasjon.SaksStatus;
-import no.nav.familie.inntektsmelding.server.auth.Autentisert;
+import no.nav.familie.inntektsmelding.server.auth.api.Autentisert;
 import no.nav.familie.inntektsmelding.typer.dto.YtelseTypeDto;
 import no.nav.foreldrepenger.konfig.Environment;
 import no.nav.foreldrepenger.konfig.KonfigVerdi;

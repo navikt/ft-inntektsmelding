@@ -1,29 +1,15 @@
 package no.nav.familie.inntektsmelding.server.auth;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.container.ContainerRequestFilter;
-import jakarta.ws.rs.container.ContainerResponseContext;
-import jakarta.ws.rs.container.ContainerResponseFilter;
-import jakarta.ws.rs.container.ResourceInfo;
+import jakarta.ws.rs.container.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-
+import no.nav.familie.inntektsmelding.server.auth.api.Autentisert;
+import no.nav.familie.inntektsmelding.server.auth.api.AutentisertMed;
 import no.nav.foreldrepenger.konfig.Environment;
 import no.nav.vedtak.exception.TekniskException;
 import no.nav.vedtak.log.mdc.MDCOperations;
@@ -38,6 +24,16 @@ import no.nav.vedtak.sikkerhet.oidc.token.OpenIDToken;
 import no.nav.vedtak.sikkerhet.oidc.token.TokenString;
 import no.nav.vedtak.sikkerhet.oidc.validator.JwtUtil;
 import no.nav.vedtak.sikkerhet.oidc.validator.OidcTokenValidatorConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Provider
 @Priority(Priorities.AUTHENTICATION)
@@ -45,8 +41,8 @@ public class AuthenticationFilter implements ContainerRequestFilter, ContainerRe
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticationFilter.class);
     private static final List<Class<? extends Annotation>> GYLDIGE_ANNOTERINGER = List.of(Autentisert.class,
-        AutentisertMed.class,
-        UtenAutentisering.class);
+            AutentisertMed.class,
+            UtenAutentisering.class);
 
     @Context
     private ResourceInfo resourceinfo;
@@ -95,7 +91,7 @@ public class AuthenticationFilter implements ContainerRequestFilter, ContainerRe
      */
     private static Annotation getAnnotation(Method method, List<Class<? extends Annotation>> supportedTypes) {
         return findAnnotation(supportedTypes, method.getAnnotations()).or(() -> findAnnotation(supportedTypes,
-            method.getDeclaringClass().getAnnotations())).orElse(null);
+                method.getDeclaringClass().getAnnotations())).orElse(null);
     }
 
     private static Optional<Annotation> findAnnotation(List<Class<? extends Annotation>> types, Annotation[] annotations) {
@@ -124,8 +120,8 @@ public class AuthenticationFilter implements ContainerRequestFilter, ContainerRe
 
     private static void setCallAndConsumerId(ContainerRequestContext request) {
         String callId = Optional.ofNullable(request.getHeaderString(MDCOperations.HTTP_HEADER_CALL_ID))
-            .or(() -> Optional.ofNullable(request.getHeaderString(MDCOperations.HTTP_HEADER_ALT_CALL_ID)))
-            .orElseGet(MDCOperations::generateCallId);
+                .or(() -> Optional.ofNullable(request.getHeaderString(MDCOperations.HTTP_HEADER_ALT_CALL_ID)))
+                .orElseGet(MDCOperations::generateCallId);
         MDCOperations.putCallId(callId);
 
         Optional.ofNullable(request.getHeaderString(MDCOperations.HTTP_HEADER_CONSUMER_ID)).ifPresent(MDCOperations::putConsumerId);
@@ -158,7 +154,7 @@ public class AuthenticationFilter implements ContainerRequestFilter, ContainerRe
     private static Optional<TokenString> getTokenFromHeader(ContainerRequestContext request) {
         String headerValue = request.getHeaderString(HttpHeaders.AUTHORIZATION);
         return headerValue != null && headerValue.startsWith(OpenIDToken.OIDC_DEFAULT_TOKEN_TYPE) ? Optional.of(new TokenString(headerValue.substring(
-            OpenIDToken.OIDC_DEFAULT_TOKEN_TYPE.length()))) : Optional.empty();
+                OpenIDToken.OIDC_DEFAULT_TOKEN_TYPE.length()))) : Optional.empty();
     }
 
     private static void validerTokenSetKontekst(TokenString tokenString, OpenIDProvider forventetTokenProvider) {
@@ -171,13 +167,13 @@ public class AuthenticationFilter implements ContainerRequestFilter, ContainerRe
             LOG.debug("Issuer fra token: {}", tokenIssuer);
 
             var openIdKonfig = ConfigProvider.getOpenIDConfiguration(tokenIssuer)
-                .orElseThrow(() -> new WebApplicationException("Issuer støttes ikke: " + tokenIssuer));
+                    .orElseThrow(() -> new WebApplicationException("Issuer støttes ikke: " + tokenIssuer));
 
             var tokenProvider = openIdKonfig.type();
             if (!Objects.equals(tokenProvider, forventetTokenProvider)) {
                 throw new WebApplicationException(String.format("Trenger en gyldig %s token, men har fått %s.",
-                    forventetTokenProvider,
-                    tokenProvider));
+                        forventetTokenProvider,
+                        tokenProvider));
             }
 
             // Valider
@@ -187,13 +183,13 @@ public class AuthenticationFilter implements ContainerRequestFilter, ContainerRe
             // Håndter valideringsresultat
             if (validateResult.isValid()) {
                 var expiresAt = Optional.ofNullable(JwtUtil.getExpirationTime(claims))
-                    .orElseThrow(() -> new WebApplicationException("Token mangler expires at claim"));
+                        .orElseThrow(() -> new WebApplicationException("Token mangler expires at claim"));
                 var token = new OpenIDToken(tokenProvider, OpenIDToken.OIDC_DEFAULT_TOKEN_TYPE, tokenString, null, expiresAt.toEpochMilli());
                 KontekstHolder.setKontekst(RequestKontekst.forRequest(validateResult.subject(),
-                    validateResult.compactSubject(),
-                    validateResult.identType(),
-                    token,
-                    validateResult.getGrupper()));
+                        validateResult.compactSubject(),
+                        validateResult.identType(),
+                        token,
+                        validateResult.getGrupper()));
                 LOG.trace("token validert");
             } else {
                 throw new WebApplicationException("Ugyldig token");

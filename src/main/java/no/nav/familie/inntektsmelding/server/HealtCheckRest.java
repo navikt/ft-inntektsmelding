@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import no.nav.vedtak.log.metrics.LivenessAware;
 import no.nav.vedtak.log.metrics.ReadinessAware;
+import no.nav.vedtak.sikkerhet.jaxrs.UtenAutentisering;
 
 @Path("/health")
 @ApplicationScoped
@@ -41,6 +42,7 @@ public class HealtCheckRest {
 
     @GET
     @Path("/isAlive")
+    @UtenAutentisering
     public Response isAlive() {
         if (live.stream().allMatch(LivenessAware::isAlive)) {
             return Response.ok().build();
@@ -51,6 +53,7 @@ public class HealtCheckRest {
 
     @GET
     @Path("/isReady")
+    @UtenAutentisering
     public Response isReady() {
         if (ready.stream().allMatch(ReadinessAware::isReady)) {
             return Response.ok().build();
@@ -61,6 +64,7 @@ public class HealtCheckRest {
 
     @GET
     @Path("/preStop")
+    @UtenAutentisering
     public Response preStop() {
         starter.stopServices();
         return Response.ok().build();

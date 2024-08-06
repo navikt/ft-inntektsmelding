@@ -3,7 +3,6 @@ package no.nav.familie.inntektsmelding.integrasjoner.dokgen;
 import static java.time.format.DateTimeFormatter.ofPattern;
 
 import java.math.BigDecimal;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.TextStyle;
@@ -152,6 +151,7 @@ public class InntektsmeldingPdfData {
             return null;
         }
         var navnPåUkedag = dato.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.forLanguageTag("NO"));
+        navnPåUkedag = navnPåUkedag.substring(0,1).toUpperCase() + navnPåUkedag.substring(1);
         return String.format(navnPåUkedag + " " + dato.format(ofPattern("d. MMMM yyyy", Locale.forLanguageTag("NO"))));
     }
 

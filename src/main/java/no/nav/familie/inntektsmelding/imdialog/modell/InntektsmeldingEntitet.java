@@ -22,6 +22,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
+import no.nav.familie.inntektsmelding.koder.ÅrsakTilInnsending;
 import no.nav.familie.inntektsmelding.koder.Ytelsetype;
 import no.nav.familie.inntektsmelding.typer.entitet.AktørIdEntitet;
 
@@ -40,6 +41,10 @@ public class InntektsmeldingEntitet {
     @Enumerated(EnumType.STRING)
     @Column(name = "ytelse_type")
     private Ytelsetype ytelsetype;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "aarsak_til_innsending")
+    private ÅrsakTilInnsending årsakTilInnsending;
 
     @Column(name = "arbeidsgiver_ident")
     private String arbeidsgiverIdent;
@@ -95,6 +100,8 @@ public class InntektsmeldingEntitet {
     public BigDecimal getMånedInntekt() {
         return månedInntekt;
     }
+
+    public ÅrsakTilInnsending getÅrsakTilInnsending() { return årsakTilInnsending; }
 
     public List<BortaltNaturalytelseEntitet> getBorfalteNaturalYtelser() {
         return borfalteNaturalYtelser;
@@ -179,6 +186,11 @@ public class InntektsmeldingEntitet {
 
         public Builder medYtelsetype(Ytelsetype ytelsetype) {
             kladd.ytelsetype = ytelsetype;
+            return this;
+        }
+
+        public Builder medÅrsakTilInnsending(ÅrsakTilInnsending årsakTilInnsending) {
+            kladd.årsakTilInnsending = årsakTilInnsending;
             return this;
         }
 

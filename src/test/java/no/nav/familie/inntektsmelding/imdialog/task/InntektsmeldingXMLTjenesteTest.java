@@ -8,6 +8,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 
+import no.nav.familie.inntektsmelding.koder.ÅrsakTilInnsending;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,6 +53,7 @@ class InntektsmeldingXMLTjenesteTest {
         var inntektsmelding = InntektsmeldingEntitet.builder()
             .medArbeidsgiverIdent("999999999")
             .medStartDato(LocalDate.of(2024, 6, 1))
+            .medÅrsakTilInnsending(ÅrsakTilInnsending.NY)
             .medYtelsetype(Ytelsetype.FORELDREPENGER)
             .medMånedInntekt(BigDecimal.valueOf(35000))
             .medAktørId(aktørIdSøker)

@@ -13,6 +13,7 @@ import no.nav.familie.inntektsmelding.imdialog.modell.BortaltNaturalytelseEntite
 import no.nav.familie.inntektsmelding.imdialog.modell.InntektsmeldingEntitet;
 import no.nav.familie.inntektsmelding.imdialog.modell.KontaktpersonEntitet;
 import no.nav.familie.inntektsmelding.imdialog.modell.RefusjonsendringEntitet;
+import no.nav.familie.inntektsmelding.koder.ÅrsakTilInnsending;
 import no.nav.familie.inntektsmelding.koder.NaturalytelseType;
 import no.nav.familie.inntektsmelding.koder.Ytelsetype;
 
@@ -33,9 +34,17 @@ class InntektsmeldingMapperTest {
     @Test
     void skal_teste_mapping_uten_ref_og_naturalytelse() {
         // Arrange
-        var request = new SendInntektsmeldingRequestDto(UUID.randomUUID(), new AktørIdDto("9999999999999"), YtelseTypeDto.FORELDREPENGER,
-            new ArbeidsgiverDto("999999999"), new SendInntektsmeldingRequestDto.KontaktpersonRequestDto("Testy test", "999999999"), LocalDate.now(),
-            BigDecimal.valueOf(5000), null, Collections.emptyList(), Collections.emptyList());
+        var request = new SendInntektsmeldingRequestDto(UUID.randomUUID(),
+            new AktørIdDto("9999999999999"),
+            YtelseTypeDto.FORELDREPENGER,
+            ÅrsakTilInnsending.NY,
+            new ArbeidsgiverDto("999999999"),
+            new SendInntektsmeldingRequestDto.KontaktpersonRequestDto("Testy test", "999999999"),
+            LocalDate.now(),
+            BigDecimal.valueOf(5000),
+            null,
+            Collections.emptyList(),
+            Collections.emptyList());
 
         // Act
         var entitet = InntektsmeldingMapper.mapTilEntitet(request);
@@ -60,6 +69,7 @@ class InntektsmeldingMapperTest {
         var request = new SendInntektsmeldingRequestDto(UUID.randomUUID(),
             new AktørIdDto("9999999999999"),
             YtelseTypeDto.FORELDREPENGER,
+            ÅrsakTilInnsending.NY,
             new ArbeidsgiverDto("999999999"),
             new SendInntektsmeldingRequestDto.KontaktpersonRequestDto("Testy test", "999999999"),
             LocalDate.now(),

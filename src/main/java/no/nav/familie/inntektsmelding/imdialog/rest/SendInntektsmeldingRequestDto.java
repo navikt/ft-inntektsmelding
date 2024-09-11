@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
+import no.nav.familie.inntektsmelding.koder.ÅrsakTilInnsending;
 import no.nav.familie.inntektsmelding.server.authz.TilgangsstyringInputTyper;
 import no.nav.familie.inntektsmelding.server.authz.api.TilgangsstyringDto;
 import no.nav.familie.inntektsmelding.server.authz.api.TilgangsstyringInput;
@@ -22,6 +23,7 @@ import no.nav.familie.inntektsmelding.typer.dto.YtelseTypeDto;
 public record SendInntektsmeldingRequestDto(@NotNull @Valid UUID foresporselUuid,
                                             @NotNull @Valid AktørIdDto aktorId,
                                             @NotNull @Valid YtelseTypeDto ytelse,
+                                            @NotNull ÅrsakTilInnsending årsakTilInnsending,
                                             @NotNull @Valid ArbeidsgiverDto arbeidsgiverIdent,
                                             @NotNull @Valid KontaktpersonRequestDto kontaktperson,
                                             @NotNull LocalDate startdato,
@@ -33,7 +35,6 @@ public record SendInntektsmeldingRequestDto(@NotNull @Valid UUID foresporselUuid
     public record RefusjonendringRequestDto(@NotNull LocalDate fom,
                                             @NotNull @Min(0) @Max(Integer.MAX_VALUE) @Digits(integer = 20, fraction = 2) BigDecimal beløp) {
     }
-
 
     public record BortfaltNaturalytelseRequestDto(@NotNull LocalDate fom,
                                           LocalDate tom,

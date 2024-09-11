@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 
+import no.nav.familie.inntektsmelding.koder.ÅrsakTilInnsending;
 import no.nav.vedtak.konfig.Tid;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,7 @@ class InntektsmeldingRepositoryTest extends EntityManagerAwareTest {
         // Arrange
         var førLagring = InntektsmeldingEntitet.builder()
             .medAktørId(new AktørIdEntitet("9999999999999"))
+            .medÅrsakTilInnsending(ÅrsakTilInnsending.NY)
             .medKontaktperson(new KontaktpersonEntitet("Testy test", "999999999"))
             .medYtelsetype(Ytelsetype.FORELDREPENGER)
             .medMånedInntekt(BigDecimal.valueOf(4000))
@@ -61,6 +63,7 @@ class InntektsmeldingRepositoryTest extends EntityManagerAwareTest {
         // Arrange
         var førLagring = InntektsmeldingEntitet.builder()
             .medAktørId(new AktørIdEntitet("9999999999999"))
+            .medÅrsakTilInnsending(ÅrsakTilInnsending.NY)
             .medKontaktperson(new KontaktpersonEntitet("Testy test", "999999999"))
             .medYtelsetype(Ytelsetype.FORELDREPENGER)
             .medMånedInntekt(BigDecimal.valueOf(4000))
@@ -101,6 +104,7 @@ class InntektsmeldingRepositoryTest extends EntityManagerAwareTest {
 
         var im1 = InntektsmeldingEntitet.builder()
             .medAktørId(aktørId)
+            .medÅrsakTilInnsending(ÅrsakTilInnsending.NY)
             .medKontaktperson(new KontaktpersonEntitet("Første", "999999999"))
             .medYtelsetype(Ytelsetype.FORELDREPENGER)
             .medMånedInntekt(BigDecimal.valueOf(4000))
@@ -114,6 +118,7 @@ class InntektsmeldingRepositoryTest extends EntityManagerAwareTest {
 
         var im2 = InntektsmeldingEntitet.builder()
             .medAktørId(aktørId)
+            .medÅrsakTilInnsending(ÅrsakTilInnsending.NY)
             .medKontaktperson(new KontaktpersonEntitet("Andre", "999999999"))
             .medYtelsetype(Ytelsetype.FORELDREPENGER)
             .medMånedInntekt(BigDecimal.valueOf(4000))
@@ -145,6 +150,7 @@ class InntektsmeldingRepositoryTest extends EntityManagerAwareTest {
 
         var im1 = InntektsmeldingEntitet.builder()
             .medAktørId(aktørId)
+            .medÅrsakTilInnsending(ÅrsakTilInnsending.NY)
             .medKontaktperson(new KontaktpersonEntitet("Første", "999999999"))
             .medYtelsetype(Ytelsetype.FORELDREPENGER)
             .medMånedInntekt(BigDecimal.valueOf(4000))
@@ -158,6 +164,7 @@ class InntektsmeldingRepositoryTest extends EntityManagerAwareTest {
 
         var im2 = InntektsmeldingEntitet.builder()
             .medAktørId(new AktørIdEntitet("1234567891111"))
+            .medÅrsakTilInnsending(ÅrsakTilInnsending.NY)
             .medKontaktperson(new KontaktpersonEntitet("Andre", "999999999"))
             .medYtelsetype(Ytelsetype.FORELDREPENGER)
             .medMånedInntekt(BigDecimal.valueOf(4000))
@@ -171,6 +178,7 @@ class InntektsmeldingRepositoryTest extends EntityManagerAwareTest {
 
         var im3 = InntektsmeldingEntitet.builder()
             .medAktørId(aktørId)
+            .medÅrsakTilInnsending(ÅrsakTilInnsending.NY)
             .medKontaktperson(new KontaktpersonEntitet("Tredje", "999999999"))
             .medYtelsetype(Ytelsetype.FORELDREPENGER)
             .medMånedInntekt(BigDecimal.valueOf(4000))
@@ -184,6 +192,7 @@ class InntektsmeldingRepositoryTest extends EntityManagerAwareTest {
 
         var im4 = InntektsmeldingEntitet.builder()
             .medAktørId(aktørId)
+            .medÅrsakTilInnsending(ÅrsakTilInnsending.NY)
             .medKontaktperson(new KontaktpersonEntitet("Fjerde", "999999999"))
             .medYtelsetype(Ytelsetype.SVANGERSKAPSPENGER)
             .medMånedInntekt(BigDecimal.valueOf(4000))

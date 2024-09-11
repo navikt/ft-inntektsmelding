@@ -6,6 +6,7 @@ import jakarta.xml.bind.JAXBElement;
 
 import no.nav.familie.inntektsmelding.imdialog.modell.InntektsmeldingEntitet;
 import no.nav.familie.inntektsmelding.integrasjoner.person.PersonIdent;
+import no.nav.familie.inntektsmelding.koder.ÅrsakTilInnsending;
 import no.nav.familie.inntektsmelding.koder.NaturalytelseType;
 import no.nav.familie.inntektsmelding.koder.Ytelsetype;
 import no.nav.familie.inntektsmelding.typer.OrganisasjonsnummerValidator;
@@ -50,8 +51,7 @@ public class InntektsmeldingXMLMapper {
         skjemainnhold.setArbeidsforhold(lagArbeidsforholdXml(inntektsmelding, of));
         skjemainnhold.setArbeidstakerFnr(aktørIdFnrMap.get(inntektsmelding.getAktørId()).getIdent());
 
-        // TODO sett ny eller endring når dette blir mulig
-        skjemainnhold.setAarsakTilInnsending("Ny");
+        skjemainnhold.setAarsakTilInnsending(mapTilÅrsakTilInnsending(inntektsmelding.getÅrsakTilInnsending()));
         skjemainnhold.setAvsendersystem(lagAvsendersysem(inntektsmelding, of));
 
         skjemainnhold.setYtelse(mapTilYtelsetype(inntektsmelding.getYtelsetype()));
@@ -196,6 +196,13 @@ public class InntektsmeldingXMLMapper {
             case YRKEBIL_TJENESTLIGBEHOV_KILOMETER -> "yrkebilTjenestligbehovKilometer";
             case YRKEBIL_TJENESTLIGBEHOV_LISTEPRIS -> "yrkebilTjenestligbehovListepris";
             case INNBETALING_TIL_UTENLANDSK_PENSJONSORDNING -> "innbetalingTilUtenlandskPensjonsordning";
+        };
+    }
+
+    private static String mapTilÅrsakTilInnsending(ÅrsakTilInnsending årsakTilInnsending) {
+        return switch (årsakTilInnsending) {
+            case NY -> "Ny";
+            case ENDRING -> "Endring";
         };
     }
 }

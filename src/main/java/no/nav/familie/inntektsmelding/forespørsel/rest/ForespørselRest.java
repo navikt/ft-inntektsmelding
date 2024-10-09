@@ -7,10 +7,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -28,6 +26,7 @@ import no.nav.familie.inntektsmelding.server.authz.api.Tilgangsstyring;
 import no.nav.familie.inntektsmelding.typer.dto.AktørIdDto;
 import no.nav.familie.inntektsmelding.typer.dto.KodeverkMapper;
 import no.nav.familie.inntektsmelding.typer.dto.OrganisasjonsnummerDto;
+import no.nav.familie.inntektsmelding.typer.dto.SaksnummerDto;
 import no.nav.familie.inntektsmelding.typer.dto.YtelseTypeDto;
 import no.nav.familie.inntektsmelding.typer.entitet.AktørIdEntitet;
 
@@ -83,6 +82,15 @@ public class ForespørselRest {
     public Response lukkForespørsel(LukkForespørselRequest request) {
         LOG.info("Lukk forespørsel for fagsakSaksnummer {} med orgnummer {} og skjæringstidspunkt {}", request.fagsakSaksnummer(), request.orgnummer(), request.skjæringstidspunkt());
         forespørselBehandlingTjeneste.lukkForespørsel(request.fagsakSaksnummer(), request.orgnummer(), request.skjæringstidspunkt());
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("/lukk-aapne")
+    public Response lukkÅpneForespørsler(SaksnummerDto fagsakSaksnummer) {
+        LOG.info("Setter alle åpne forespørsler for fagsakSaksnummer {} til UTGÅTT", fagsakSaksnummer.saksnr());
+
+        forespørselBehandlingTjeneste.lukkÅpneForespørsler(fagsakSaksnummer);
         return Response.ok().build();
     }
 

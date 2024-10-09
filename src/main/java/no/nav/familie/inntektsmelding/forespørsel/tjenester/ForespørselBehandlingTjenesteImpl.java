@@ -120,17 +120,7 @@ class ForespørselBehandlingTjenesteImpl implements ForespørselBehandlingTjenes
                 eksisterendeForespørsel);
 
             if (!trengerEksisterendeForespørsel && eksisterendeForespørsel.getStatus() == ForespørselStatus.UNDER_BEHANDLING) {
-                arbeidsgiverNotifikasjon.oppgaveUtgått(eksisterendeForespørsel.getOppgaveId(), OffsetDateTime.now());
-                arbeidsgiverNotifikasjon.ferdigstillSak(eksisterendeForespørsel.getArbeidsgiverNotifikasjonSakId(),
-                    ForespørselTekster.STATUS_TEKST_DEFAULT); // Oppdaterer status i arbeidsgiver-notifikasjon
-                forespørselTjeneste.settForespørselTilUtgått(eksisterendeForespørsel.getArbeidsgiverNotifikasjonSakId());
-
-                var msg = String.format("Setter forespørsel til utgått, orgnr: %s, stp: %s, saksnr: %s, ytelse: %s",
-                    eksisterendeForespørsel.getOrganisasjonsnummer(),
-                    eksisterendeForespørsel.getSkjæringstidspunkt(),
-                    eksisterendeForespørsel.getFagsystemSaksnummer(),
-                    eksisterendeForespørsel.getYtelseType());
-                LOG.info(msg);
+                setForespørselTilUtgått(eksisterendeForespørsel);
             }
         });
     }
@@ -167,6 +157,20 @@ class ForespørselBehandlingTjenesteImpl implements ForespørselBehandlingTjenes
         forespørselTjeneste.setOppgaveId(uuid, oppgaveId);
     }
 
+    private void setForespørselTilUtgått(ForespørselEntitet eksisterendeForespørsel) {
+        arbeidsgiverNotifikasjon.oppgaveUtgått(eksisterendeForespørsel.getOppgaveId(), OffsetDateTime.now());
+        arbeidsgiverNotifikasjon.ferdigstillSak(eksisterendeForespørsel.getArbeidsgiverNotifikasjonSakId(),
+            ForespørselTekster.STATUS_TEKST_DEFAULT); // Oppdaterer status i arbeidsgiver-notifikasjon
+        forespørselTjeneste.settForespørselTilUtgått(eksisterendeForespørsel.getArbeidsgiverNotifikasjonSakId());
+
+        var msg = String.format("Setter forespørsel til utgått, orgnr: %s, stp: %s, saksnr: %s, ytelse: %s",
+            eksisterendeForespørsel.getOrganisasjonsnummer(),
+            eksisterendeForespørsel.getSkjæringstidspunkt(),
+            eksisterendeForespørsel.getFagsystemSaksnummer(),
+            eksisterendeForespørsel.getYtelseType());
+        LOG.info(msg);
+    }
+
     public void lukkForespørsel(SaksnummerDto fagsakSaksnummer, OrganisasjonsnummerDto orgnummerDto, LocalDate skjæringstidspunkt) {
         var forespørsler = forespørselTjeneste.finnÅpneForespørslerForFagsak(fagsakSaksnummer).stream()
             .filter(f -> orgnummerDto.orgnr().equals(f.getOrganisasjonsnummer()))
@@ -178,6 +182,17 @@ class ForespørselBehandlingTjenesteImpl implements ForespørselBehandlingTjenes
         forespørsler.forEach(f -> {
             MetrikkerTjeneste.loggForespørselLukkEkstern(f.getYtelseType());
             ferdigstillForespørsel(f.getUuid(), f.getAktørId(), new OrganisasjonsnummerDto(f.getOrganisasjonsnummer()), f.getSkjæringstidspunkt());
+        });
+    }
+
+    public void lukkÅpneForespørsler(SaksnummerDto fagsakSaksnummer) {
+        var forespørsler = forespørselTjeneste.finnÅpneForespørslerForFagsak(fagsakSaksnummer).stream()
+            .filter(f -> f.getStatus() == ForespørselStatus.UNDER_BEHANDLING)
+            .toList();
+
+        forespørsler.forEach(f -> {
+            // Ønsker vi å legg til en metrikk her?
+            setForespørselTilUtgått(f);
         });
     }
 

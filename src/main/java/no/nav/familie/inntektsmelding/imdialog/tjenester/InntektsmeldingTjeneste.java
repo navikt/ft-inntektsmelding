@@ -6,6 +6,8 @@ import java.util.UUID;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import no.nav.familie.inntektsmelding.forespørsel.tjenester.LukkeÅrsak;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +72,7 @@ public class InntektsmeldingTjeneste {
         var entitet = InntektsmeldingMapper.mapTilEntitet(mottattInntektsmeldingDto);
         var imId = lagreOgLagJournalførTask(entitet);
         forespørselBehandlingTjeneste.ferdigstillForespørsel(mottattInntektsmeldingDto.foresporselUuid(), aktorId, orgnummer,
-            mottattInntektsmeldingDto.startdato());
+            mottattInntektsmeldingDto.startdato(), LukkeÅrsak.ORDINÆR_INNSENDING);
 
         var imEntitet = inntektsmeldingRepository.hentInntektsmelding(imId);
 

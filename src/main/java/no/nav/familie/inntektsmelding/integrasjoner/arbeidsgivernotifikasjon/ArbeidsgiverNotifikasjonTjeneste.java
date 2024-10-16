@@ -231,9 +231,14 @@ class ArbeidsgiverNotifikasjonTjeneste implements ArbeidsgiverNotifikasjon {
     }
 
     @Override
-    public String ferdigstillSak(String id, String statusTekst) {
+    public String ferdigstillSak(String id, String overstyrStatustekst) {
 
-        var request = NyStatusSakMutationRequest.builder().setId(id).setNyStatus(SaksStatus.FERDIG).setOverstyrStatustekstMed(statusTekst).build();
+        var request = NyStatusSakMutationRequest.builder()
+            .setId(id)
+            .setNyStatus(SaksStatus.FERDIG)
+            .setOverstyrStatustekstMed(overstyrStatustekst)
+            .build();
+
 
         var projection = new NyStatusSakResultatResponseProjection().typename()
             .onNyStatusSakVellykket(new NyStatusSakVellykketResponseProjection().id())
@@ -243,6 +248,23 @@ class ArbeidsgiverNotifikasjonTjeneste implements ArbeidsgiverNotifikasjon {
             .onSakFinnesIkke(new SakFinnesIkkeResponseProjection().feilmelding());
 
         return klient.oppdaterSakStatus(request, projection);
+    }
+
+    @Override
+    public String oppdaterSakTilleggsinformasjon(String id, String overstyrtTilleggsinformasjon) {
+        var request = TilleggsinformasjonSakMutationRequest.builder()
+            .setId(id)
+            .setTilleggsinformasjon(overstyrtTilleggsinformasjon)
+            .build();
+
+        var projection = new TilleggsinformasjonSakResultatResponseProjection().typename()
+            .onTilleggsinformasjonSakVellykket(new TilleggsinformasjonSakVellykketResponseProjection().id())
+            .onSakFinnesIkke(new SakFinnesIkkeResponseProjection().feilmelding())
+            .onKonflikt(new KonfliktResponseProjection().feilmelding())
+            .onUgyldigMerkelapp(new UgyldigMerkelappResponseProjection().feilmelding())
+            .onUkjentProdusent(new UkjentProdusentResponseProjection().feilmelding());
+
+        return klient.oppdaterSakTilleggsinformasjon(request, projection);
     }
 
 }

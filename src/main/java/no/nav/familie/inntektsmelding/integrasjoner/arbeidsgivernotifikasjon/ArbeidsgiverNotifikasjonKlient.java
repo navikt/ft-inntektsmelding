@@ -86,6 +86,18 @@ class ArbeidsgiverNotifikasjonKlient {
         throw new IllegalStateException("Utviklerfeil: Ulovlig tilstand.");
     }
 
+    public String oppdaterSakTilleggsinformasjon(TilleggsinformasjonSakMutationRequest request,
+                                                             TilleggsinformasjonSakResultatResponseProjection projection) {
+        LOG.info("FAGER: Oppdater tillegsinformasjon på sak");
+        var resultat = query(new GraphQLRequest(request, projection), TilleggsinformasjonSakMutationResponse.class).tilleggsinformasjonSak();
+        if (resultat instanceof TilleggsinformasjonSakVellykket vellykket) {
+            return vellykket.getId();
+        } else {
+            loggFeilmelding((Error) resultat, "oppdater sak tillegsinformasjon");
+        }
+        throw new IllegalStateException("Utviklerfeil: Ulovlig tilstand.");
+    }
+
     public String opprettOppgave(NyOppgaveMutationRequest request, NyOppgaveResultatResponseProjection projection) {
         LOG.info("FAGER: Opprett Oppgave");
         var resultat = query(new GraphQLRequest(request, projection), NyOppgaveMutationResponse.class).nyOppgave();

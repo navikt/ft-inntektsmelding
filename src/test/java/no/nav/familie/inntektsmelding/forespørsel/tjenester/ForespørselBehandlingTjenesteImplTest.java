@@ -102,7 +102,7 @@ public class ForespørselBehandlingTjenesteImplTest {
         forespørselRepository.oppdaterArbeidsgiverNotifikasjonSakId(forespørselUuid, SAK_ID);
 
         forespørselBehandlingTjeneste.ferdigstillForespørsel(forespørselUuid, new AktørIdEntitet(AKTØR_ID),
-            new OrganisasjonsnummerDto(BRREG_ORGNUMMER), SKJÆRINGSTIDSPUNKT);
+            new OrganisasjonsnummerDto(BRREG_ORGNUMMER), SKJÆRINGSTIDSPUNKT, LukkeÅrsak.EKSTERN_INNSENDING);
 
         var lagret = forespørselRepository.hentForespørsel(forespørselUuid);
         assertThat(lagret.get().getStatus()).isEqualTo(ForespørselStatus.FERDIG);
@@ -128,10 +128,16 @@ public class ForespørselBehandlingTjenesteImplTest {
     public void skal_lukke_forespørsel_for_sak_med_gitt_stp() {
         var forespørselUuid = forespørselRepository.lagreForespørsel(SKJÆRINGSTIDSPUNKT, YTELSETYPE, AKTØR_ID, BRREG_ORGNUMMER, SAKSNUMMMER);
         forespørselRepository.oppdaterArbeidsgiverNotifikasjonSakId(forespørselUuid, SAK_ID);
-        var forespørselUuid2 = forespørselRepository.lagreForespørsel(SKJÆRINGSTIDSPUNKT.plusDays(2), YTELSETYPE, AKTØR_ID, BRREG_ORGNUMMER, SAKSNUMMMER);
+        var forespørselUuid2 = forespørselRepository.lagreForespørsel(SKJÆRINGSTIDSPUNKT.plusDays(2),
+            YTELSETYPE,
+            AKTØR_ID,
+            BRREG_ORGNUMMER,
+            SAKSNUMMMER);
         forespørselRepository.oppdaterArbeidsgiverNotifikasjonSakId(forespørselUuid, "2");
 
-        forespørselBehandlingTjeneste.lukkForespørsel(new SaksnummerDto(SAKSNUMMMER), new OrganisasjonsnummerDto(BRREG_ORGNUMMER), SKJÆRINGSTIDSPUNKT);
+        forespørselBehandlingTjeneste.lukkForespørsel(new SaksnummerDto(SAKSNUMMMER),
+            new OrganisasjonsnummerDto(BRREG_ORGNUMMER),
+            SKJÆRINGSTIDSPUNKT);
 
         var lagret = forespørselRepository.hentForespørsel(forespørselUuid);
         assertThat(lagret.get().getStatus()).isEqualTo(ForespørselStatus.FERDIG);
@@ -209,7 +215,6 @@ public class ForespørselBehandlingTjenesteImplTest {
         assertThat(forespørslerUnderBehandling.size()).isEqualTo(1);
         assertThat(utgåtteForespørsler.size()).isEqualTo(1);
     }
-
 
 
     private void mockInfoForOpprettelse(String aktørId, Ytelsetype ytelsetype, String brregOrgnummer, String sakId, String oppgaveId) {

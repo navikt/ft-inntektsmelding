@@ -1,5 +1,6 @@
 package no.nav.familie.inntektsmelding.integrasjoner.dokgen;
 
+import static no.nav.familie.inntektsmelding.integrasjoner.dokgen.InntektsmeldingPdfData.formaterDatoForLister;
 import static no.nav.familie.inntektsmelding.integrasjoner.dokgen.InntektsmeldingPdfData.formaterDatoMedNavnPåUkedag;
 import static no.nav.familie.inntektsmelding.integrasjoner.dokgen.InntektsmeldingPdfData.formaterDatoNorsk;
 import static no.nav.familie.inntektsmelding.integrasjoner.dokgen.InntektsmeldingPdfData.formaterDatoOgTidNorsk;
@@ -83,7 +84,7 @@ class InntektsmeldingPdfDataMapperTest {
         assertThat(pdfData.getRefusjonsendringer()).isEmpty();
         assertThat(pdfData.ingenGjenopptattNaturalytelse()).isTrue();
         assertThat(pdfData.ingenBortfaltNaturalytelse()).isFalse();
-        assertThat(pdfData.getNaturalytelser().getFirst().fom()).isEqualTo(formaterDatoNorsk(naturalytelseFraDato));
+        assertThat(pdfData.getNaturalytelser().getFirst().fom()).isEqualTo(formaterDatoForLister(naturalytelseFraDato));
         assertThat(pdfData.getNaturalytelser().getFirst().beloep()).isEqualTo(naturalytelseBeløp);
         assertThat(pdfData.getNaturalytelser().getFirst().naturalytelseType()).isEqualTo("Aksjer grunnfondsbevis til underkurs");
     }
@@ -126,15 +127,14 @@ class InntektsmeldingPdfDataMapperTest {
         assertThat(bortfalteNaturalytelser).hasSize(3);
 
         var forventetFørsteFraDato = naturalytelseTilDato.plusDays(1);
-        var forventetFørsteTilDato = naturalytelseAndreFraDato.minusDays(1);
         var forventetAndreFraDato = naturalytelseAndreTilDato.plusDays(1);
-        var forventetAndreTilDato = naturalytelseTredjeTilDato.minusDays(1);
+
 
         var tilkomneNaturalytelser = pdfData.getNaturalytelser().stream().filter(naturalytelse -> !naturalytelse.erBortfalt()).toList();
 
         assertThat(tilkomneNaturalytelser).hasSize(2);
-        assertThat(tilkomneNaturalytelser.getFirst().fom()).isEqualTo(formaterDatoNorsk(forventetFørsteFraDato));
-        assertThat(tilkomneNaturalytelser.get(1).fom()).isEqualTo(formaterDatoNorsk(forventetAndreFraDato));
+        assertThat(tilkomneNaturalytelser.getFirst().fom()).isEqualTo(formaterDatoForLister(forventetFørsteFraDato));
+        assertThat(tilkomneNaturalytelser.get(1).fom()).isEqualTo(formaterDatoForLister(forventetAndreFraDato));
     }
 
     @Test
@@ -179,9 +179,9 @@ class InntektsmeldingPdfDataMapperTest {
         var tilkomneNaturalytelser = pdfData.getNaturalytelser().stream().filter(naturalytelse -> !naturalytelse.erBortfalt()).toList();
 
         assertThat(tilkomneNaturalytelser).hasSize(2);
-        assertThat(tilkomneNaturalytelser.getFirst().fom()).isEqualTo(formaterDatoNorsk(forventetFørsteFraDato));
+        assertThat(tilkomneNaturalytelser.getFirst().fom()).isEqualTo(formaterDatoForLister(forventetFørsteFraDato));
         assertThat(tilkomneNaturalytelser.getFirst().naturalytelseType()).isEqualTo("Bil");
-        assertThat(tilkomneNaturalytelser.get(1).fom()).isEqualTo(formaterDatoNorsk(forventetAndreFraDato));
+        assertThat(tilkomneNaturalytelser.get(1).fom()).isEqualTo(formaterDatoForLister(forventetAndreFraDato));
         assertThat(tilkomneNaturalytelser.get(1).naturalytelseType()).isEqualTo("Bolig");
     }
 

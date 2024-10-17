@@ -145,6 +145,13 @@ public class InntektsmeldingPdfData {
         return dato.format(ofPattern("d. MMMM yyyy", Locale.forLanguageTag("NO")));
     }
 
+    public static String formaterDatoForLister(LocalDate dato) {
+        if (dato == null) {
+            return null;
+        }
+        return dato.format(ofPattern("d.MM.yyyy", Locale.forLanguageTag("NO")));
+    }
+
     public static String formaterDatoMedNavnPåUkedag(LocalDate dato) {
         if (dato == null) {
             return null;

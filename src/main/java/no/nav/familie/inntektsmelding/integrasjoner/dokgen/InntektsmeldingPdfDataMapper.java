@@ -1,6 +1,6 @@
 package no.nav.familie.inntektsmelding.integrasjoner.dokgen;
 
-import static no.nav.familie.inntektsmelding.integrasjoner.dokgen.InntektsmeldingPdfData.formaterDatoNorsk;
+import static no.nav.familie.inntektsmelding.integrasjoner.dokgen.InntektsmeldingPdfData.formaterDatoForLister;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -51,8 +51,8 @@ public class InntektsmeldingPdfDataMapper {
 
     private static List<Endringsarsak> mapEndringsårsaker(List<EndringsårsakEntitet> endringsårsaker) {
         return endringsårsaker.stream()
-            .map( endringsårsakEntitet -> new Endringsarsak(endringsårsakEntitet.getÅrsak().getBeskrivelse(), formaterDatoNorsk(endringsårsakEntitet.getFom().orElse(null)), formaterDatoNorsk(endringsårsakEntitet.getTom().orElse(null)),
-                formaterDatoNorsk(endringsårsakEntitet.getBleKjentFom().orElse(null))))
+            .map( endringsårsakEntitet -> new Endringsarsak(endringsårsakEntitet.getÅrsak().getBeskrivelse(), formaterDatoForLister(endringsårsakEntitet.getFom().orElse(null)), formaterDatoForLister(endringsårsakEntitet.getTom().orElse(null)),
+                formaterDatoForLister(endringsårsakEntitet.getBleKjentFom().orElse(null))))
             .toList();
     }
 
@@ -79,7 +79,7 @@ public class InntektsmeldingPdfDataMapper {
     }
 
     private static NaturalYtelse opprettNaturalytelserTilBrev(NaturalYtelseMapper.NaturalYtelse bn) {
-        return new NaturalYtelse(formaterDatoNorsk(bn.fom()),
+        return new NaturalYtelse(formaterDatoForLister(bn.fom()),
             mapTypeTekst(bn.type()),
             bn.beløp(),
             bn.bortfallt());
@@ -111,11 +111,11 @@ public class InntektsmeldingPdfDataMapper {
 
     private static List<RefusjonsendringPeriode> mapRefusjonsendringPerioder(List<RefusjonsendringEntitet> refusjonsendringer, LocalDate opphørsdato) {
         var refusjonsendringerTilBrev = refusjonsendringer.stream()
-            .map(rpe -> new RefusjonsendringPeriode(formaterDatoNorsk(rpe.getFom()),
+            .map(rpe -> new RefusjonsendringPeriode(formaterDatoForLister(rpe.getFom()),
                 rpe.getRefusjonPrMnd()))
             .collect(Collectors.toList());
         if (opphørsdato != null && !opphørsdato.equals(Tid.TIDENES_ENDE)) {
-            refusjonsendringerTilBrev.add(new RefusjonsendringPeriode(formaterDatoNorsk(opphørsdato), BigDecimal.ZERO));
+            refusjonsendringerTilBrev.add(new RefusjonsendringPeriode(formaterDatoForLister(opphørsdato), BigDecimal.ZERO));
         }
         return refusjonsendringerTilBrev;
     }

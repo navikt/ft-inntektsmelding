@@ -15,6 +15,7 @@ public interface ArbeidsgiverNotifikasjon {
 
     String oppdaterSakStatusMedGrupperingsId(String grupperingsid, Merkelapp merkelapp, SaksStatus status, String overstyrtStatusText);
 
+    String oppdaterSakTilleggsinformasjon(String id, String overstyrtTillagsinformasjon);
 
     String opprettOppgave(String grupperingsid,
                           Merkelapp merkelapp,
@@ -24,7 +25,7 @@ public interface ArbeidsgiverNotifikasjon {
                           String varseltekst,
                           URI lenke);
 
-    String ferdigstillSak(String id, String statusTekst);
+    String ferdigstillSak(String id, String overstyrStatustekst);
 
     String oppgaveUtført(String oppgaveId, OffsetDateTime utførtTidspunkt);
 

@@ -92,7 +92,7 @@ public class ForespørselRest {
     @POST
     @Path("/sett-til-utgatt")
     public Response settForespørselTilUtgått(LukkForespørselRequest request) {
-        LOG.info("Setter forespørsel for fagsakSaksnummer {} med orgnummer {} og skjæringstidspunkt {} til utgått", request.fagsakSaksnummer(), request.orgnummer(), request.skjæringstidspunkt());
+        LOG.info("Setter forespørsel for fagsakSaksnummer {} til utgått", request.fagsakSaksnummer());
         forespørselBehandlingTjeneste.settForespørselTilUtgått(request.fagsakSaksnummer(), request.orgnummer(), request.skjæringstidspunkt());
         return Response.ok().build();
     }

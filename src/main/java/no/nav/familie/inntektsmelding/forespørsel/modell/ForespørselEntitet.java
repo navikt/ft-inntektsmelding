@@ -140,6 +140,10 @@ public class ForespørselEntitet {
         return fagsystemSaksnummer;
     }
 
+    public LocalDateTime getOpprettetTidspunkt() {
+        return opprettetTidspunkt;
+    }
+
     @Override
     public String toString() {
         return "ForespørselEntitet{" + "id=" + id + ", uuid=" + uuid + ", sakId=" + sakId + ", organisasjonsnummer=" + maskerId(organisasjonsnummer)

@@ -69,12 +69,13 @@ public class InntektsmeldingTjeneste {
         var orgnummer = new OrganisasjonsnummerDto(mottattInntektsmeldingDto.arbeidsgiverIdent().ident());
         var entitet = InntektsmeldingMapper.mapTilEntitet(mottattInntektsmeldingDto);
         var imId = lagreOgLagJournalførTask(entitet);
-        forespørselBehandlingTjeneste.ferdigstillForespørsel(mottattInntektsmeldingDto.foresporselUuid(), aktorId, orgnummer,
+        var lukketForespørsel = forespørselBehandlingTjeneste.ferdigstillForespørsel(mottattInntektsmeldingDto.foresporselUuid(), aktorId, orgnummer,
             mottattInntektsmeldingDto.startdato());
 
         var imEntitet = inntektsmeldingRepository.hentInntektsmelding(imId);
 
         // Metrikker i prometheus
+        MetrikkerTjeneste.loggForespørselLukkIntern(lukketForespørsel);
         MetrikkerTjeneste.loggInnsendtInntektsmelding(imEntitet);
 
         return InntektsmeldingMapper.mapFraEntitet(imEntitet, mottattInntektsmeldingDto.foresporselUuid());

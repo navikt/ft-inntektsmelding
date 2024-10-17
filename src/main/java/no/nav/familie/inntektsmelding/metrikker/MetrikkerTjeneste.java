@@ -1,17 +1,28 @@
 package no.nav.familie.inntektsmelding.metrikker;
 
+import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.ImmutableTag;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Tag;
+import no.nav.familie.inntektsmelding.forespørsel.modell.ForespørselEntitet;
 import no.nav.familie.inntektsmelding.imdialog.modell.InntektsmeldingEntitet;
 import no.nav.familie.inntektsmelding.koder.Ytelsetype;
 import no.nav.vedtak.konfig.Tid;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Map;
 
 public class MetrikkerTjeneste {
+
+    // Hvor mange dager er det mellom opprettelse og løsning av oppgaven når inntektsmelding sendes inn via eksternt system
+    private static final DistributionSummary  OPPGAVE_VARIGHET_EKSTERN_TELLER =  Metrics.summary("ftinntektsmelding.oppgaver.varighet.ekstern");
+
+    // Hvor mange dager er det mellom opprettelse og løsning av oppgaven når inntektsmelding sendes inn via vårt eget skjema
+    private static final DistributionSummary  OPPGAVE_VARIGHET_INTERN_TELLER =  Metrics.summary("ftinntektsmelding.oppgaver.varighet.intern");
+
     // Måler opprettelse av oppgaver per ytelse
     private static final String COUNTER_FORESPØRRSEL = "ftinntektsmelding.oppgaver.opprettet";
 
@@ -34,10 +45,18 @@ public class MetrikkerTjeneste {
         Metrics.counter(COUNTER_FORESPØRRSEL, tags).increment();
     }
 
-    public static void loggForespørselLukkEkstern(Ytelsetype ytelsetype) {
+    public static void loggForespørselLukkEkstern(ForespørselEntitet forespørsel) {
         var tags = new ArrayList<Tag>();
-        tags.add(new ImmutableTag("ytelse", ytelsetype.name()));
+        tags.add(new ImmutableTag("ytelse", forespørsel.getYtelseType().name()));
         Metrics.counter(COUNTER_LUKK_EKSTERN, tags).increment();
+        var dagerSidenOpprettelse = finnAntallDagerÅpen(forespørsel);
+        OPPGAVE_VARIGHET_EKSTERN_TELLER.record(dagerSidenOpprettelse);
+    }
+
+    private static long finnAntallDagerÅpen(ForespørselEntitet forespørsel) {
+        var opprettetDato = forespørsel.getOpprettetTidspunkt().toLocalDate();
+        var dagerSidenOpprettelse = ChronoUnit.DAYS.between(opprettetDato, LocalDate.now());
+        return dagerSidenOpprettelse;
     }
 
     public static void loggInnsendtInntektsmelding(InntektsmeldingEntitet inntektsmelding) {
@@ -61,5 +80,10 @@ public class MetrikkerTjeneste {
             inntektsmelding.getEndringsårsaker().forEach(endring -> tagsÅrsaker.add(new ImmutableTag("aarsak", endring.getÅrsak().name())));
             Metrics.counter(COUNTER_YTELLSE_METRIC_ÅRSAK_MAP.get(inntektsmelding.getYtelsetype()), tagsÅrsaker).increment();
         }
+    }
+
+    public static void loggForespørselLukkIntern(ForespørselEntitet forespørsel) {
+        var dagerSidenOpprettelse = finnAntallDagerÅpen(forespørsel);
+        OPPGAVE_VARIGHET_INTERN_TELLER.record(dagerSidenOpprettelse);
     }
 }

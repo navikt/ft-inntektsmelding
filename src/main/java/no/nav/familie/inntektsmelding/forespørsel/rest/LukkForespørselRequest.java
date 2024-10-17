@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import no.nav.familie.inntektsmelding.typer.dto.OrganisasjonsnummerDto;
 import no.nav.familie.inntektsmelding.typer.dto.SaksnummerDto;
 
-public record LukkForespørselRequest(@NotNull @Valid OrganisasjonsnummerDto orgnummer,
+public record LukkForespørselRequest(@Valid OrganisasjonsnummerDto orgnummer,
                                      @NotNull @Valid SaksnummerDto fagsakSaksnummer,
                                      LocalDate skjæringstidspunkt) {
 }

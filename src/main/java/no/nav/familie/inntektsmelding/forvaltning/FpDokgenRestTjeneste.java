@@ -22,6 +22,8 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import no.nav.vedtak.sikkerhet.jaxrs.UtenAutentisering;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +48,7 @@ import no.nav.vedtak.konfig.Tid;
 @ApplicationScoped
 @Path(FpDokgenRestTjeneste.BASE_PATH)
 @Produces(MediaType.APPLICATION_JSON)
-@AutentisertMedAzure
+@UtenAutentisering
 /*Denne tjenesten er ment brukt til testformål, og eventuelt for å gjenskape feilsituasjoner i produksjon*/
 public class FpDokgenRestTjeneste {
     public static final String BASE_PATH = "/inntektsmelding-pdf";
@@ -76,7 +78,7 @@ public class FpDokgenRestTjeneste {
         if (IS_PROD) {
             throw new ManglerTilgangException("IKKE-TILGANG", "Ikke tilgjengelig i produksjon");
         }
-        sjekkAtKallerHarRollenDrift();
+        sjekkAtSaksbehandlerHarRollenDrift();
 
         InntektsmeldingEntitet inntektsmeldingEntitet;
         if (inntektsmeldingRequest.inntektsmeldingId != null) {

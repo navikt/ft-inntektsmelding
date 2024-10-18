@@ -99,6 +99,14 @@ public class ForespørselRest {
         return Response.ok().build();
     }
 
+    @POST
+    @Path("/sett-til-utgatt")
+    public Response settForespørselTilUtgått(LukkForespørselRequest request) {
+        LOG.info("Setter forespørsel for fagsakSaksnummer {} til utgått", request.fagsakSaksnummer());
+        forespørselBehandlingTjeneste.settForespørselTilUtgått(request.fagsakSaksnummer(), request.orgnummer(), request.skjæringstidspunkt());
+        return Response.ok().build();
+    }
+
     record ForespørselDto(UUID uuid, OrganisasjonsnummerDto organisasjonsnummer, LocalDate skjæringstidspunkt, AktørIdDto brukerAktørId,
                           YtelseTypeDto ytelseType) {
     }

@@ -137,20 +137,23 @@ class ForespørselBehandlingTjenesteImpl implements ForespørselBehandlingTjenes
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }
-
-                arbeidsgiverNotifikasjon.oppgaveUtgått(eksisterendeForespørsel.getOppgaveId(), OffsetDateTime.now());
-                arbeidsgiverNotifikasjon.ferdigstillSak(eksisterendeForespørsel.getArbeidsgiverNotifikasjonSakId(),
-                    ForespørselTekster.STATUS_TEKST_DEFAULT); // Oppdaterer status i arbeidsgiver-notifikasjon
-                forespørselTjeneste.settForespørselTilUtgått(eksisterendeForespørsel.getArbeidsgiverNotifikasjonSakId());
-
-                var msg = String.format("Setter forespørsel til utgått, orgnr: %s, stp: %s, saksnr: %s, ytelse: %s",
-                    eksisterendeForespørsel.getOrganisasjonsnummer(),
-                    eksisterendeForespørsel.getSkjæringstidspunkt(),
-                    eksisterendeForespørsel.getFagsystemSaksnummer(),
-                    eksisterendeForespørsel.getYtelseType());
-                LOG.info(msg);
+                setterForespørselTilUtgått(eksisterendeForespørsel);
             }
         });
+    }
+
+    private void setterForespørselTilUtgått(ForespørselEntitet eksisterendeForespørsel) {
+        arbeidsgiverNotifikasjon.oppgaveUtgått(eksisterendeForespørsel.getOppgaveId(), OffsetDateTime.now());
+        //todo legge inn tekst om at man ikke lenger trenger inntektsmelding
+        arbeidsgiverNotifikasjon.ferdigstillSak(eksisterendeForespørsel.getArbeidsgiverNotifikasjonSakId(), ForespørselTekster.STATUS_TEKST_DEFAULT);
+        forespørselTjeneste.settForespørselTilUtgått(eksisterendeForespørsel.getArbeidsgiverNotifikasjonSakId());
+
+        var msg = String.format("Setter forespørsel til utgått, orgnr: %s, stp: %s, saksnr: %s, ytelse: %s",
+            eksisterendeForespørsel.getOrganisasjonsnummer(),
+            eksisterendeForespørsel.getSkjæringstidspunkt(),
+            eksisterendeForespørsel.getFagsystemSaksnummer(),
+            eksisterendeForespørsel.getYtelseType());
+        LOG.info(msg);
     }
 
     private boolean innholderRequestEksisterendeForespørsel(Map<LocalDate, List<OrganisasjonsnummerDto>> organisasjonerPerSkjæringstidspunkt,
@@ -191,10 +194,7 @@ class ForespørselBehandlingTjenesteImpl implements ForespørselBehandlingTjenes
     }
 
     public void lukkForespørsel(SaksnummerDto fagsakSaksnummer, OrganisasjonsnummerDto orgnummerDto, LocalDate skjæringstidspunkt) {
-        var forespørsler = forespørselTjeneste.finnÅpneForespørslerForFagsak(fagsakSaksnummer).stream()
-            .filter(f -> orgnummerDto.orgnr().equals(f.getOrganisasjonsnummer()))
-            .filter(f -> skjæringstidspunkt == null || skjæringstidspunkt.equals(f.getSkjæringstidspunkt()))
-            .toList();
+        var forespørsler = hentÅpneForespørslerForFagsak(fagsakSaksnummer, orgnummerDto, skjæringstidspunkt);
 
         // Alle inntektsmeldinger sendt inn via arbeidsgiverportal blir lukket umiddelbart etter innsending fra #InntektsmeldingTjeneste,
         // så forespørsler som enda er åpne her blir løst ved innsending fra andre systemer
@@ -205,6 +205,19 @@ class ForespørselBehandlingTjenesteImpl implements ForespørselBehandlingTjenes
                 f.getSkjæringstidspunkt());
             MetrikkerTjeneste.loggForespørselLukkEkstern(lukketForespørsel);
         });
+    }
+
+    public void settForespørselTilUtgått(SaksnummerDto fagsakSaksnummer, OrganisasjonsnummerDto orgnummerDto, LocalDate skjæringstidspunkt) {
+        var forespørsler = hentÅpneForespørslerForFagsak(fagsakSaksnummer, orgnummerDto, skjæringstidspunkt);
+
+        forespørsler.forEach(this::setterForespørselTilUtgått);
+    }
+
+    private List<ForespørselEntitet> hentÅpneForespørslerForFagsak(SaksnummerDto fagsakSaksnummer, OrganisasjonsnummerDto orgnummerDto, LocalDate skjæringstidspunkt) {
+        return forespørselTjeneste.finnÅpneForespørslerForFagsak(fagsakSaksnummer).stream()
+            .filter(f -> orgnummerDto == null || orgnummerDto.orgnr().equals(f.getOrganisasjonsnummer()))
+            .filter(f -> skjæringstidspunkt == null || skjæringstidspunkt.equals(f.getSkjæringstidspunkt()))
+            .toList();
     }
 
     private void validerStartdato(ForespørselEntitet forespørsel, LocalDate startdato) {

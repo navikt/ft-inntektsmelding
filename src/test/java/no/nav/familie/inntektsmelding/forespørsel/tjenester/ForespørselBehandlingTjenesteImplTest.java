@@ -110,7 +110,7 @@ public class ForespørselBehandlingTjenesteImplTest {
     }
 
     @Test
-    public void skal_lukke_alle_forespørspørsler_for_sak() {
+    public void skal_sette_alle_forespørspørsler_for_sak_til_ferdig() {
         var forespørselUuid = forespørselRepository.lagreForespørsel(SKJÆRINGSTIDSPUNKT, YTELSETYPE, AKTØR_ID, BRREG_ORGNUMMER, SAKSNUMMMER);
         forespørselRepository.oppdaterArbeidsgiverNotifikasjonSakId(forespørselUuid, SAK_ID);
         var forespørselUuid2 = forespørselRepository.lagreForespørsel(SKJÆRINGSTIDSPUNKT.plusDays(2), YTELSETYPE, AKTØR_ID, BRREG_ORGNUMMER, SAKSNUMMMER);
@@ -122,6 +122,21 @@ public class ForespørselBehandlingTjenesteImplTest {
         assertThat(lagret.get().getStatus()).isEqualTo(ForespørselStatus.FERDIG);
         var lagret2 = forespørselRepository.hentForespørsel(forespørselUuid2);
         assertThat(lagret2.get().getStatus()).isEqualTo(ForespørselStatus.FERDIG);
+    }
+
+    @Test
+    public void skal_sette_alle_forespørspørsler_for_sak_til_utgått() {
+        var forespørselUuid = forespørselRepository.lagreForespørsel(SKJÆRINGSTIDSPUNKT, YTELSETYPE, AKTØR_ID, BRREG_ORGNUMMER, SAKSNUMMMER);
+        forespørselRepository.oppdaterArbeidsgiverNotifikasjonSakId(forespørselUuid, SAK_ID);
+        var forespørselUuid2 = forespørselRepository.lagreForespørsel(SKJÆRINGSTIDSPUNKT.plusDays(2), YTELSETYPE, AKTØR_ID, BRREG_ORGNUMMER, SAKSNUMMMER);
+        forespørselRepository.oppdaterArbeidsgiverNotifikasjonSakId(forespørselUuid2, "2");
+
+        forespørselBehandlingTjeneste.settForespørselTilUtgått(new SaksnummerDto(SAKSNUMMMER),null, null);
+
+        var lagret = forespørselRepository.hentForespørsel(forespørselUuid);
+        assertThat(lagret.get().getStatus()).isEqualTo(ForespørselStatus.UTGÅTT);
+        var lagret2 = forespørselRepository.hentForespørsel(forespørselUuid2);
+        assertThat(lagret2.get().getStatus()).isEqualTo(ForespørselStatus.UTGÅTT);
     }
 
     @Test

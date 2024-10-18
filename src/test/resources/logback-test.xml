@@ -7,6 +7,17 @@
         </encoder>
     </appender>
 
+    <appender name="secureLogger" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d [%-5level] [%thread] %logger{5} - [%X{consumerId}, %X{callId}, %X{userId}] - %m%n</pattern>
+            <!-- pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern -->
+        </encoder>
+    </appender>
+
+    <logger name="secureLogger" level="INFO" additivity="false">
+        <appender-ref ref="secureLogger" />
+    </logger>
+
     <logger name="no.nav" level="${log.level.no.nav:-INFO}" />
 
     <logger name="org.hibernate.SQL" level="${org.hibernate.SQL:-WARN}" />

@@ -26,6 +26,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import no.nav.familie.inntektsmelding.server.auth.api.AutentisertMedAzure;
+import no.nav.familie.inntektsmelding.server.auth.api.Tilgangskontrollert;
 import no.nav.familie.inntektsmelding.server.tilgangsstyring.Tilgang;
 import no.nav.vedtak.felles.prosesstask.api.ProsessTaskStatus;
 import no.nav.vedtak.felles.prosesstask.rest.app.ProsessTaskApplikasjonTjeneste;
@@ -69,6 +70,7 @@ public class ProsessTaskRestTjeneste {
         @ApiResponse(responseCode = "202", description = "Prosesstaskens oppdatert informasjon", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProsessTaskDataDto.class))),
         @ApiResponse(responseCode = "500", description = "Feilet pga ukjent feil eller tekniske/funksjonelle feil")
     })
+    @Tilgangskontrollert
     public ProsessTaskDataDto createProsessTask(
         @Parameter(description = "Informasjon for restart en eksisterende prosesstask") @Valid ProsessTaskOpprettInputDto inputDto) {
         sjekkAtKallerHarRollenDrift();
@@ -87,6 +89,7 @@ public class ProsessTaskRestTjeneste {
         @ApiResponse(responseCode = "200", description = "Prosesstaskens oppdatert informasjon", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProsessTaskRestartResultatDto.class))),
         @ApiResponse(responseCode = "500", description = "Feilet pga ukjent feil eller tekniske/funksjonelle feil")
     })
+    @Tilgangskontrollert
     public ProsessTaskRestartResultatDto restartProsessTask(
         @Parameter(description = "Informasjon for restart en eksisterende prosesstask") @Valid ProsessTaskRestartInputDto restartInputDto) {
         sjekkAtKallerHarRollenDrift();
@@ -102,6 +105,7 @@ public class ProsessTaskRestTjeneste {
         @ApiResponse(responseCode = "200", description = "Response med liste av prosesstasks som restartes", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProsessTaskRetryAllResultatDto.class))),
         @ApiResponse(responseCode = "500", description = "Feilet pga ukjent feil eller tekniske/funksjonelle feil")
     })
+    @Tilgangskontrollert
     public ProsessTaskRetryAllResultatDto retryAllProsessTask() {
         sjekkAtKallerHarRollenDrift();
         // kjøres manuelt for å avhjelpe feilsituasjon, da er det veldig greit at det blir logget!
@@ -115,6 +119,7 @@ public class ProsessTaskRestTjeneste {
     @Operation(description = "Lister prosesstasker med angitt status.", tags = "prosesstask", responses = {
         @ApiResponse(responseCode = "200", description = "Liste over prosesstasker, eller tom liste når angitt/default søkefilter ikke finner noen prosesstasker", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProsessTaskDataDto.class)))
     })
+    @Tilgangskontrollert
     public List<ProsessTaskDataDto> finnProsessTasks(
         @Parameter(description = "Liste av statuser som skal hentes.") @Valid StatusFilterDto statusFilterDto) {
         sjekkAtKallerHarRollenDrift();
@@ -129,6 +134,7 @@ public class ProsessTaskRestTjeneste {
         @ApiResponse(responseCode = "404", description = "Tom respons når angitt prosesstask-id ikke finnes"),
         @ApiResponse(responseCode = "400", description = "Feil input")
     })
+    @Tilgangskontrollert
     public Response finnFeiletProsessTask(
         @NotNull @Parameter(description = "Prosesstask-id for feilet prosesstask") @Valid ProsessTaskIdDto prosessTaskIdDto) {
         sjekkAtKallerHarRollenDrift();
@@ -146,6 +152,7 @@ public class ProsessTaskRestTjeneste {
         @ApiResponse(responseCode = "200", description = "Angitt prosesstask-id satt til status FERDIG"),
         @ApiResponse(responseCode = "500", description = "Feilet pga ukjent feil eller tekniske/funksjonelle feil")
     })
+    @Tilgangskontrollert
     public Response setFeiletProsessTaskFerdig(
         @NotNull @Parameter(description = "Prosesstask-id for feilet prosesstask") @Valid ProsessTaskSetFerdigInputDto prosessTaskIdDto) {
         sjekkAtKallerHarRollenDrift();

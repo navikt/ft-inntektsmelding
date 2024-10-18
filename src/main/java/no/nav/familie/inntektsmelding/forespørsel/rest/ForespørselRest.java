@@ -20,6 +20,7 @@ import no.nav.familie.inntektsmelding.forespørsel.modell.ForespørselEntitet;
 import no.nav.familie.inntektsmelding.forespørsel.tjenester.ForespørselBehandlingTjeneste;
 import no.nav.familie.inntektsmelding.metrikker.MetrikkerTjeneste;
 import no.nav.familie.inntektsmelding.server.auth.api.AutentisertMedAzure;
+import no.nav.familie.inntektsmelding.server.auth.api.Tilgangskontrollert;
 import no.nav.familie.inntektsmelding.server.tilgangsstyring.Tilgang;
 import no.nav.familie.inntektsmelding.typer.dto.AktørIdDto;
 import no.nav.familie.inntektsmelding.typer.dto.ForespørselResultat;
@@ -53,6 +54,7 @@ public class ForespørselRest {
 
     @POST
     @Path("/opprett")
+    @Tilgangskontrollert
     public Response opprettForespørsel(OpprettForespørselRequest request) {
         LOG.info("Mottok forespørsel om inntektsmeldingoppgave på fagsakSaksnummer {}", request.fagsakSaksnummer());
         sjekkErSystemkall();
@@ -71,6 +73,7 @@ public class ForespørselRest {
 
     @POST
     @Path("/oppdater")
+    @Tilgangskontrollert
     public Response oppdaterForespørsler(OppdaterForespørslerRequest request) {
         LOG.info("Mottok forespørsel om oppdatering av inntektsmeldingoppgaver på fagsakSaksnummer {}", request.fagsakSaksnummer());
         sjekkErSystemkall();
@@ -87,6 +90,7 @@ public class ForespørselRest {
 
     @POST
     @Path("/lukk")
+    @Tilgangskontrollert
     public Response lukkForespørsel(LukkForespørselRequest request) {
         LOG.info("Lukk forespørsel for fagsakSaksnummer {} med orgnummer {} og skjæringstidspunkt {}",
             request.fagsakSaksnummer(),

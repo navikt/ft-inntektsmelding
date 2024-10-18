@@ -22,8 +22,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import no.nav.vedtak.sikkerhet.jaxrs.UtenAutentisering;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +36,7 @@ import no.nav.familie.inntektsmelding.integrasjoner.dokgen.FpDokgenTjeneste;
 import no.nav.familie.inntektsmelding.koder.NaturalytelseType;
 import no.nav.familie.inntektsmelding.koder.Ytelsetype;
 import no.nav.familie.inntektsmelding.server.auth.api.AutentisertMedAzure;
+import no.nav.familie.inntektsmelding.server.auth.api.Tilgangskontrollert;
 import no.nav.familie.inntektsmelding.server.tilgangsstyring.Tilgang;
 import no.nav.familie.inntektsmelding.typer.dto.EndringsårsakDto;
 import no.nav.familie.inntektsmelding.typer.entitet.AktørIdEntitet;
@@ -74,6 +73,7 @@ public class FpDokgenRestTjeneste {
     @Consumes(APPLICATION_JSON)
     @Produces("application/pdf")
     @Operation(description = "Generer en pdf av en inntektsmelding", tags = "forvaltning")
+    @Tilgangskontrollert
     public Response genererPdf(@Valid @NotNull InntektsmeldingRequest inntektsmeldingRequest) {
         if (IS_PROD) {
             throw new ManglerTilgangException("IKKE-TILGANG", "Ikke tilgjengelig i produksjon");

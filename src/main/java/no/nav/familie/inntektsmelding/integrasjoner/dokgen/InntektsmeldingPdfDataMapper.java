@@ -24,7 +24,6 @@ public class InntektsmeldingPdfDataMapper {
                                                                 String arbeidsgvierIdent) {
         var imDokumentdataBuilder = new InntektsmeldingPdfData.Builder()
             .medNavn(personInfo.mapNavn())
-            .medForNavnSøker(personInfo.mapFornavn())
             .medPersonnummer(personInfo.fødselsnummer().getIdent())
             .medArbeidsgiverIdent(arbeidsgvierIdent)
             .medArbeidsgiverNavn(arbeidsgiverNavn)

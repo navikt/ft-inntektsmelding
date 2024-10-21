@@ -75,7 +75,6 @@ class InntektsmeldingPdfDataMapperTest {
         assertThat(pdfData.getKontaktperson().telefonnummer()).isEqualTo(ORGNUMMER);
         assertThat(pdfData.getMånedInntekt()).isEqualTo(INNTEKT);
         assertThat(pdfData.getNavnSøker()).isEqualTo(ETTERNAVN + " " + FORNAVN + " " + MELLOMNAVN);
-        assertThat(pdfData.getFornavnSøker()).isEqualTo(FORNAVN);
         assertThat(pdfData.getYtelsetype()).isEqualTo(Ytelsetype.FORELDREPENGER);
         assertThat(pdfData.getOpprettetTidspunkt()).isEqualTo(formaterDatoOgTidNorsk(OPPRETTETTIDSPUNKT));
         assertThat(pdfData.getStartDato()).isEqualTo(formaterDatoMedNavnPåUkedag(START_DATO));

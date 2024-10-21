@@ -86,8 +86,6 @@ public class ForespørselRepository {
             .setParameter("SAK_ID", arbeidsgiverNotifikasjonSakId);
         var resultList = query.getResultList();
 
-        LOG.debug("Fant entiteter for ferdigstilling: {}", resultList);
-
         resultList.forEach(f -> {
             f.setStatus(ForespørselStatus.FERDIG);
             entityManager.persist(f);

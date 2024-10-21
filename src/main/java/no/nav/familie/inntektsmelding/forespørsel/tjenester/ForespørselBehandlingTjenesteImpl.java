@@ -11,15 +11,10 @@ import java.util.UUID;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
-import net.logstash.logback.argument.StructuredArguments;
 import no.nav.familie.inntektsmelding.typer.dto.ForespørselResultat;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import no.nav.familie.inntektsmelding.forespørsel.modell.ForespørselEntitet;
 import no.nav.familie.inntektsmelding.integrasjoner.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjon;
@@ -139,19 +134,11 @@ class ForespørselBehandlingTjenesteImpl implements ForespørselBehandlingTjenes
                 eksisterendeForespørsel);
 
             if (!trengerEksisterendeForespørsel && eksisterendeForespørsel.getStatus() == ForespørselStatus.UNDER_BEHANDLING) {
-                try {
-                    var mapper = new ObjectMapper().registerModule(new JavaTimeModule());
-                    LOG.debug(String.format(
-                        "Forsøker å sette eksisterende forespørsel til utgått. Eksisterende forespørsel: %s, organisasjonerPerSkjæringstidspunkt: %s",
-                        mapper.writeValueAsString(eksisterendeForespørsel),
-                        mapper.writeValueAsString(organisasjonerPerSkjæringstidspunkt)));
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
                 setterForespørselTilUtgått(eksisterendeForespørsel);
             }
         });
     }
+
     private void setterForespørselTilUtgått(ForespørselEntitet eksisterendeForespørsel) {
         arbeidsgiverNotifikasjon.oppgaveUtgått(eksisterendeForespørsel.getOppgaveId(), OffsetDateTime.now());
         arbeidsgiverNotifikasjon.ferdigstillSak(eksisterendeForespørsel.getArbeidsgiverNotifikasjonSakId()); // Oppdaterer status i arbeidsgiver-notifikasjon

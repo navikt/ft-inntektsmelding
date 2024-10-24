@@ -23,13 +23,11 @@ jobs:
       packages: write
       id-token: write
       pull-requests: read
-    uses: navikt/fp-gha-workflows/.github/workflows/build-app-postgres.yml@main
+    uses: navikt/fp-gha-workflows/.github/workflows/build-app-no-db.yml@main
     with:
-      postgres-user: inntektsmelding_unit
       build-image: ${{ github.ref_name == 'master' }} # default: true
       push-image: ${{ github.ref_name == 'master' }} # default: false
       namespace: teamforeldrepenger
-      sonar-scan: false
     secrets: inherit
 
   publish-image-k9:
@@ -40,9 +38,8 @@ jobs:
       packages: write
       id-token: write
       pull-requests: read
-    uses: navikt/fp-gha-workflows/.github/workflows/build-app-postgres.yml@main
+    uses: navikt/fp-gha-workflows/.github/workflows/build-app-no-db.yml@main
     with:
-      postgres-user: inntektsmelding_unit
       build-image: ${{ github.ref_name == 'master' }} # default: true
       push-image: ${{ github.ref_name == 'master' }} # default: false
       namespace: k9saksbehandling

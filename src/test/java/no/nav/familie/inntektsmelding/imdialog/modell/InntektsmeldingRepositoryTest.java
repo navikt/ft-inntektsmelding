@@ -7,19 +7,18 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 
-import no.nav.familie.inntektsmelding.koder.Endringsårsak;
-import no.nav.vedtak.konfig.Tid;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import no.nav.familie.inntektsmelding.database.JpaExtension;
+import no.nav.familie.inntektsmelding.database.JpaTestcontainerExtension;
+import no.nav.familie.inntektsmelding.koder.Endringsårsak;
 import no.nav.familie.inntektsmelding.koder.Ytelsetype;
 import no.nav.familie.inntektsmelding.typer.entitet.AktørIdEntitet;
 import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
+import no.nav.vedtak.konfig.Tid;
 
-@ExtendWith(JpaExtension.class)
+@ExtendWith(JpaTestcontainerExtension.class)
 class InntektsmeldingRepositoryTest extends EntityManagerAwareTest {
 
     private InntektsmeldingRepository inntektsmeldingRepository;
@@ -89,8 +88,10 @@ class InntektsmeldingRepositoryTest extends EntityManagerAwareTest {
         assertThat(etterLagring.get().getOpphørsdatoRefusjon()).isEqualTo(førLagring.getOpphørsdatoRefusjon());
         assertThat(etterLagring.get().getMånedRefusjon()).isEqualByComparingTo(førLagring.getMånedRefusjon());
         assertThat(etterLagring.get().getRefusjonsendringer()).hasSize(1);
-        assertThat(etterLagring.get().getRefusjonsendringer().get(0).getFom()).isEqualTo(førLagring.getRefusjonsendringer().get(0).getFom());
-        assertThat(etterLagring.get().getRefusjonsendringer().get(0).getRefusjonPrMnd()).isEqualByComparingTo(førLagring.getRefusjonsendringer().get(0).getRefusjonPrMnd());
+        assertThat(etterLagring.get().getRefusjonsendringer().getFirst().getFom()).isEqualTo(førLagring.getRefusjonsendringer().getFirst().getFom());
+        assertThat(etterLagring.get().getRefusjonsendringer().getFirst().getRefusjonPrMnd()).isEqualByComparingTo(førLagring.getRefusjonsendringer()
+            .getFirst()
+            .getRefusjonPrMnd());
     }
 
     @Test
@@ -130,9 +131,9 @@ class InntektsmeldingRepositoryTest extends EntityManagerAwareTest {
         assertThat(etterLagring.get().getOpphørsdatoRefusjon()).isEqualTo(førLagring.getOpphørsdatoRefusjon());
         assertThat(etterLagring.get().getMånedRefusjon()).isEqualByComparingTo(førLagring.getMånedRefusjon());
         assertThat(etterLagring.get().getEndringsårsaker()).hasSize(1);
-        assertThat(etterLagring.get().getEndringsårsaker().get(0).getÅrsak()).isEqualTo(Endringsårsak.TARIFFENDRING);
-        assertThat(etterLagring.get().getEndringsårsaker().get(0).getFom().orElse(null)).isEqualTo(LocalDate.now());
-        assertThat(etterLagring.get().getEndringsårsaker().get(0).getBleKjentFom().orElse(null)).isEqualTo(LocalDate.now().plusDays(10));
+        assertThat(etterLagring.get().getEndringsårsaker().getFirst().getÅrsak()).isEqualTo(Endringsårsak.TARIFFENDRING);
+        assertThat(etterLagring.get().getEndringsårsaker().getFirst().getFom().orElse(null)).isEqualTo(LocalDate.now());
+        assertThat(etterLagring.get().getEndringsårsaker().getFirst().getBleKjentFom().orElse(null)).isEqualTo(LocalDate.now().plusDays(10));
     }
 
 

@@ -88,8 +88,8 @@ class InntektsmeldingRepositoryTest extends EntityManagerAwareTest {
         assertThat(etterLagring.get().getOpphørsdatoRefusjon()).isEqualTo(førLagring.getOpphørsdatoRefusjon());
         assertThat(etterLagring.get().getMånedRefusjon()).isEqualByComparingTo(førLagring.getMånedRefusjon());
         assertThat(etterLagring.get().getRefusjonsendringer()).hasSize(1);
-        assertThat(etterLagring.get().getRefusjonsendringer().get(0).getFom()).isEqualTo(førLagring.getRefusjonsendringer().get(0).getFom());
-        assertThat(etterLagring.get().getRefusjonsendringer().get(0).getRefusjonPrMnd()).isEqualByComparingTo(førLagring.getRefusjonsendringer()
+        assertThat(etterLagring.get().getRefusjonsendringer().getFirst().getFom()).isEqualTo(førLagring.getRefusjonsendringer().get(0).getFom());
+        assertThat(etterLagring.get().getRefusjonsendringer().getFirst().getRefusjonPrMnd()).isEqualByComparingTo(førLagring.getRefusjonsendringer()
             .get(0)
             .getRefusjonPrMnd());
     }
@@ -131,9 +131,9 @@ class InntektsmeldingRepositoryTest extends EntityManagerAwareTest {
         assertThat(etterLagring.get().getOpphørsdatoRefusjon()).isEqualTo(førLagring.getOpphørsdatoRefusjon());
         assertThat(etterLagring.get().getMånedRefusjon()).isEqualByComparingTo(førLagring.getMånedRefusjon());
         assertThat(etterLagring.get().getEndringsårsaker()).hasSize(1);
-        assertThat(etterLagring.get().getEndringsårsaker().get(0).getÅrsak()).isEqualTo(Endringsårsak.TARIFFENDRING);
-        assertThat(etterLagring.get().getEndringsårsaker().get(0).getFom().orElse(null)).isEqualTo(LocalDate.now());
-        assertThat(etterLagring.get().getEndringsårsaker().get(0).getBleKjentFom().orElse(null)).isEqualTo(LocalDate.now().plusDays(10));
+        assertThat(etterLagring.get().getEndringsårsaker().getFirst().getÅrsak()).isEqualTo(Endringsårsak.TARIFFENDRING);
+        assertThat(etterLagring.get().getEndringsårsaker().getFirst().getFom().orElse(null)).isEqualTo(LocalDate.now());
+        assertThat(etterLagring.get().getEndringsårsaker().getFirst().getBleKjentFom().orElse(null)).isEqualTo(LocalDate.now().plusDays(10));
     }
 
 

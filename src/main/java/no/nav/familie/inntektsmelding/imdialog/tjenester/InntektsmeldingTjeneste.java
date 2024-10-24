@@ -1,5 +1,6 @@
 package no.nav.familie.inntektsmelding.imdialog.tjenester;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -147,7 +148,7 @@ public class InntektsmeldingTjeneste {
     }
 
     private List<InntektsmeldingDialogDto.MånedsinntektResponsDto> lagInntekterDto(ForespørselEntitet forespørsel) {
-        var inntekter = inntektTjeneste.hentInntekt(forespørsel.getAktørId(), forespørsel.getSkjæringstidspunkt(),
+        var inntekter = inntektTjeneste.hentInntekt(forespørsel.getAktørId(), forespørsel.getSkjæringstidspunkt(), LocalDate.now(),
             forespørsel.getOrganisasjonsnummer());
         return inntekter.stream()
             .map(i -> new InntektsmeldingDialogDto.MånedsinntektResponsDto(i.måned().atDay(1), i.måned().atEndOfMonth(), i.beløp(),

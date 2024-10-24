@@ -107,7 +107,7 @@ class InntektsmeldingTjenesteTest {
         var inntekt1 = new InntektTjeneste.Månedsinntekt(YearMonth.of(2024, 3), BigDecimal.valueOf(52000), forespørsel.getOrganisasjonsnummer());
         var inntekt2 = new InntektTjeneste.Månedsinntekt(YearMonth.of(2024, 4), BigDecimal.valueOf(52000), forespørsel.getOrganisasjonsnummer());
         var inntekt3 = new InntektTjeneste.Månedsinntekt(YearMonth.of(2024, 5), BigDecimal.valueOf(52000), forespørsel.getOrganisasjonsnummer());
-        when(inntektTjeneste.hentInntekt(forespørsel.getAktørId(), forespørsel.getSkjæringstidspunkt(),
+        when(inntektTjeneste.hentInntekt(forespørsel.getAktørId(), forespørsel.getSkjæringstidspunkt(), LocalDate.now(),
             forespørsel.getOrganisasjonsnummer())).thenReturn(List.of(inntekt1, inntekt2, inntekt3));
 
         // Act
@@ -167,18 +167,4 @@ class InntektsmeldingTjenesteTest {
         assertThat(ex.getMessage()).contains("Kan ikke motta nye inntektsmeldinger på utgåtte forespørsler");
 
     }
-
-    @Test
-    void skal_lage_tomme_innteker() {
-        var organisasjonsnummer = "999999999";
-        var i1 = InntektTjeneste.fyllInnTommeInntekter(LocalDate.of(2024, 2, 15), organisasjonsnummer);
-
-        assertThat(i1.size()).isEqualTo(3);
-        assertThat(i1.get(0).beløp()).isNull();
-        assertThat(i1.get(0).organisasjonsnummer()).isEqualTo(organisasjonsnummer);
-        assertThat(i1.get(0).måned()).isEqualTo(YearMonth.of(2023, 11));
-        assertThat(i1.get(1).måned()).isEqualTo(YearMonth.of(2023, 12));
-        assertThat(i1.get(2).måned()).isEqualTo(YearMonth.of(2024, 1));
-    }
-
 }

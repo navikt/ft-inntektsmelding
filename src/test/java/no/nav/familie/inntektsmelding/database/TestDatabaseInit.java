@@ -1,6 +1,5 @@
 package no.nav.familie.inntektsmelding.database;
 
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.naming.NamingException;
@@ -16,26 +15,19 @@ import com.zaxxer.hikari.HikariDataSource;
 /**
  * Initielt skjemaoppsett + migrering av unittest-skjemaer
  */
-public final class Databaseskjemainitialisering {
+public final class TestDatabaseInit {
     private static final AtomicBoolean GUARD_UNIT_TEST_SKJEMAER = new AtomicBoolean();
 
-    public static final String USER = "inntektsmelding";
-
-    private static DataSource DS;
-
-    @SuppressWarnings("resource")
-    public static void migrerUnittestSkjemaer(String jdbcUrl) {
-        settJdniOppslag(jdbcUrl);
-
+    public static void settOppDatasourceOgMigrer(String jdbcUrl, String username, String password) {
+        var ds = createDatasource(jdbcUrl, username, password);
+        settJdniOppslag(ds);
         if (GUARD_UNIT_TEST_SKJEMAER.compareAndSet(false, true)) {
-            var location = "/db/postgres/";
-
             var flyway = Flyway.configure()
-                .dataSource(DS)
-                .locations(location)
+                .dataSource(ds)
+                .locations("/db/postgres/")
                 .baselineOnMigrate(true)
+                .cleanDisabled(false)
                 .load();
-
             try {
                 flyway.migrate();
             } catch (FlywayException fwe) {
@@ -50,22 +42,19 @@ public final class Databaseskjemainitialisering {
         }
     }
 
-    private static synchronized DataSource settJdniOppslag(String user, String jdbcUrl) {
-        var ds = createDs(user, jdbcUrl);
+    private static void settJdniOppslag(DataSource dataSource) {
         try {
-            new EnvEntry("jdbc/defaultDS", ds); // NOSONAR
-            return ds;
+            new EnvEntry("jdbc/defaultDS", dataSource); // NOSONAR
         } catch (NamingException e) {
             throw new IllegalStateException("Feil under registrering av JDNI-entry for default datasource", e); // NOSONAR
         }
     }
 
-    private static HikariDataSource createDs(String user, String jdbcUrl) {
-        Objects.requireNonNull(user, "user");
+    private static HikariDataSource createDatasource(String jdbcUrl, String username, String password) {
         var cfg = new HikariConfig();
         cfg.setJdbcUrl(jdbcUrl);
-        cfg.setUsername(USER);
-        cfg.setPassword(USER);
+        cfg.setUsername(username);
+        cfg.setPassword(password);
         cfg.setConnectionTimeout(1500);
         cfg.setValidationTimeout(120L * 1000L);
         cfg.setMaximumPoolSize(4);
@@ -75,12 +64,4 @@ public final class Databaseskjemainitialisering {
         Runtime.getRuntime().addShutdownHook(new Thread(ds::close));
         return ds;
     }
-
-    private static void settJdniOppslag(String jdbcUrl) {
-        if (DS != null) {
-            return;
-        }
-        DS = settJdniOppslag(USER, jdbcUrl);
-    }
-
 }

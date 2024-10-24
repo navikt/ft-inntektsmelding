@@ -9,7 +9,6 @@ import javax.sql.DataSource;
 import org.eclipse.jetty.plus.jndi.EnvEntry;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.FlywayException;
-import org.flywaydb.core.api.configuration.ClassicConfiguration;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -20,25 +19,23 @@ import com.zaxxer.hikari.HikariDataSource;
 public final class Databaseskjemainitialisering {
     private static final AtomicBoolean GUARD_UNIT_TEST_SKJEMAER = new AtomicBoolean();
 
-    static final String USER = "inntektsmelding_unit";
+    public static final String USER = "inntektsmelding";
 
-    private static final DataSource DS = settJdniOppslag(USER);
-
-    public static void main(String[] args) {
-        migrerUnittestSkjemaer();
-    }
+    private static DataSource DS;
 
     @SuppressWarnings("resource")
-    public static void migrerUnittestSkjemaer() {
+    public static void migrerUnittestSkjemaer(String jdbcUrl) {
+        settJdniOppslag(jdbcUrl);
+
         if (GUARD_UNIT_TEST_SKJEMAER.compareAndSet(false, true)) {
             var location = "/db/postgres/";
 
-            ClassicConfiguration conf = new ClassicConfiguration();
-            conf.setDataSource(createDs(USER));
-            conf.setLocationsAsStrings(location);
-            conf.setBaselineOnMigrate(true);
-            //conf.setCleanDisabled(false);
-            Flyway flyway = new Flyway(conf);
+            var flyway = Flyway.configure()
+                .dataSource(DS)
+                .locations(location)
+                .baselineOnMigrate(true)
+                .load();
+
             try {
                 flyway.migrate();
             } catch (FlywayException fwe) {
@@ -53,12 +50,9 @@ public final class Databaseskjemainitialisering {
         }
     }
 
-    private static synchronized DataSource settJdniOppslag(String user) {
-
-        var ds = createDs(user);
-
+    private static synchronized DataSource settJdniOppslag(String user, String jdbcUrl) {
+        var ds = createDs(user, jdbcUrl);
         try {
-
             new EnvEntry("jdbc/defaultDS", ds); // NOSONAR
             return ds;
         } catch (NamingException e) {
@@ -66,10 +60,10 @@ public final class Databaseskjemainitialisering {
         }
     }
 
-    private static HikariDataSource createDs(String user) {
+    private static HikariDataSource createDs(String user, String jdbcUrl) {
         Objects.requireNonNull(user, "user");
         var cfg = new HikariConfig();
-        cfg.setJdbcUrl(System.getProperty("DB_JDBC_URL", String.format("jdbc:postgresql://localhost:5432/%s?reWriteBatchedInserts=true", USER)));
+        cfg.setJdbcUrl(jdbcUrl);
         cfg.setUsername(USER);
         cfg.setPassword(USER);
         cfg.setConnectionTimeout(1500);
@@ -78,20 +72,15 @@ public final class Databaseskjemainitialisering {
         cfg.setAutoCommit(false);
 
         var ds = new HikariDataSource(cfg);
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ds.close();
-            }
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(ds::close));
         return ds;
     }
 
-    public static void settJdniOppslag() {
+    private static void settJdniOppslag(String jdbcUrl) {
         if (DS != null) {
             return;
         }
-        settJdniOppslag(USER);
+        DS = settJdniOppslag(USER, jdbcUrl);
     }
 
 }

@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
-import no.nav.familie.inntektsmelding.database.JpaExtension;
+import no.nav.familie.inntektsmelding.database.JpaTestcontainerExtension;
 import no.nav.familie.inntektsmelding.forespørsel.modell.ForespørselRepository;
 import no.nav.familie.inntektsmelding.integrasjoner.arbeidsgivernotifikasjon.ArbeidsgiverNotifikasjon;
 import no.nav.familie.inntektsmelding.integrasjoner.person.PersonIdent;
@@ -29,7 +29,7 @@ import no.nav.familie.inntektsmelding.typer.dto.SaksnummerDto;
 import no.nav.familie.inntektsmelding.typer.entitet.AktørIdEntitet;
 import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
 
-@ExtendWith(JpaExtension.class)
+@ExtendWith(JpaTestcontainerExtension.class)
 public class ForespørselBehandlingTjenesteImplTest extends EntityManagerAwareTest {
 
     private static final String BRREG_ORGNUMMER = "974760673";

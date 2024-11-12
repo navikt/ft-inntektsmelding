@@ -4,6 +4,13 @@ import java.util.List;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
+import jakarta.ws.rs.NotFoundException;
+
+import no.nav.familie.inntektsmelding.integrasjoner.person.PersonIdent;
+import no.nav.familie.inntektsmelding.integrasjoner.person.PersonTjeneste;
+
+import no.nav.familie.inntektsmelding.koder.Ytelsetype;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,13 +20,27 @@ import no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.rest.Slå
 @ApplicationScoped
 public class ArbeidstakerTjeneste {
     private static final Logger LOG = LoggerFactory.getLogger(ArbeidstakerTjeneste.class);
+    private PersonTjeneste personTjeneste;
 
-    public SlåOppArbeidstakerResponseDto slåOppArbeidstaker(String fødselsnummer) {
-        // TODO: Slå opp arbeidstaker
-        // TODO: Sjekk at arbeidsgiver har tilgang til informasjon om den ansatte
+    public ArbeidstakerTjeneste() {
+        // CDI
+    }
 
-        LOG.info("Returnerer dummy-data enn så lenge");
-        return new SlåOppArbeidstakerResponseDto("Ola", null, "Nordmann",
+    public ArbeidstakerTjeneste(PersonTjeneste personTjeneste) {
+        this.personTjeneste = personTjeneste;
+    }
+
+    public SlåOppArbeidstakerResponseDto slåOppArbeidstaker(PersonIdent ident) {
+        var personInfo = personTjeneste.hentPersonFraIdent(ident, Ytelsetype.OMSORGSDAGER);
+        // TODO: Hent arbeidsforhold for personen fra AAReg
+        // TODO: Sjekk tilganger til å hente arbeidsforhold fra Altinn
+
+       if (personInfo == null) {
+           return null;
+       }
+
+        LOG.info("Returnerer informasjon om arbeidstaker og arbeidsforhold for {}", personInfo.fødselsnummer());
+        return new SlåOppArbeidstakerResponseDto(personInfo.fornavn(), personInfo.mellomnavn(), personInfo.etternavn(),
             List.of(new ArbeidsforholdDto("Dummy arbeidsgiver", "00000000", "123456789")
         ));
     }

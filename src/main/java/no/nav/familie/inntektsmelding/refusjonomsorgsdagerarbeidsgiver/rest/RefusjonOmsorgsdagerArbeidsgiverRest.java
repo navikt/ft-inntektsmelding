@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -35,10 +36,7 @@ public class RefusjonOmsorgsdagerArbeidsgiverRest {
     private static final Logger LOG = LoggerFactory.getLogger(RefusjonOmsorgsdagerArbeidsgiverRest.class);
 
     public static final String BASE_PATH = "/imdialog/refusjon-omsorgsdager-arbeidsgiver";
-    private static final String HENT_OPPLYSNINGER = "/opplysninger";
     private static final String SLÅ_OPP_ARBEIDSTAKER = "/arbeidstaker";
-    private static final String SEND_SOKNAD = "/send-soknad";
-    private static final String LAST_NED_PDF = "/last-ned-pdf";
 
     private ArbeidstakerTjeneste arbeidstakerTjeneste;
 
@@ -62,6 +60,9 @@ public class RefusjonOmsorgsdagerArbeidsgiverRest {
 
         LOG.info("Slår opp arbeidstaker med fødselsnummer {}", slåOppArbeidstakerDto.fødselsnummer());
         var dto = arbeidstakerTjeneste.slåOppArbeidstaker(slåOppArbeidstakerDto.fødselsnummer());
+        if (dto == null) {
+            throw new NotFoundException();
+        }
         return Response.ok(dto).build();
 
     }

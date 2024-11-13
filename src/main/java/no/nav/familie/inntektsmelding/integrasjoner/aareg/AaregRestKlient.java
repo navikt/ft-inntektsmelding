@@ -1,5 +1,6 @@
 package no.nav.familie.inntektsmelding.integrasjoner.aareg;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -36,22 +37,32 @@ public class AaregRestKlient {
         this.restConfig = RestConfig.forClient(this.getClass());
     }
 
+    public AaregRestKlient(RestClient restClient) {
+        this.restClient = restClient;
+        this.restConfig = RestConfig.forClient(this.getClass());
+    }
+
     public List<ArbeidsforholdDto> finnArbeidsforholdForArbeidstaker(String ident, LocalDate qfom, LocalDate qtom) {
         try {
-            var target = UriBuilder.fromUri(restConfig.endpoint())
-                .path("arbeidsforhold")
-                .queryParam("ansettelsesperiodeFom", String.valueOf(qfom))
-                .queryParam("ansettelsesperiodeTom", String.valueOf(qtom))
-                .queryParam("regelverk", "A_ORDNINGEN")
-                .queryParam("historikk", "true")
-                .queryParam("sporingsinformasjon", "false")
-                .build();
+            var target = lagUriForForFinnArbeidsforholdForArbeidstaker(qfom, qtom);
             var request = RestRequest.newGET(target, restConfig).header(NavHeaders.HEADER_NAV_PERSONIDENT, ident);
             var result = restClient.send(request, ArbeidsforholdDto[].class);
             return Arrays.asList(result);
         } catch (UriBuilderException | IllegalArgumentException e) {
             throw new IllegalArgumentException("Utviklerfeil syntax-exception for finnArbeidsforholdForArbeidstaker");
         }
+    }
+
+    /** Kun eksponert for å kunne teste URI-bygging – skal ikke brukes ellers */
+    URI lagUriForForFinnArbeidsforholdForArbeidstaker(LocalDate qfom, LocalDate qtom) {
+        return UriBuilder.fromUri(restConfig.endpoint())
+            .path("arbeidsforhold")
+            .queryParam("ansettelsesperiodeFom", String.valueOf(qfom))
+            .queryParam("ansettelsesperiodeTom", String.valueOf(qtom))
+            .queryParam("regelverk", "A_ORDNINGEN")
+            .queryParam("historikk", "true")
+            .queryParam("sporingsinformasjon", "false")
+            .build();
     }
 
 }

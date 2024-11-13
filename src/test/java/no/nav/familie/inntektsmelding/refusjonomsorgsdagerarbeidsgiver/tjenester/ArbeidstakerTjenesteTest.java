@@ -8,6 +8,7 @@ import no.nav.familie.inntektsmelding.integrasjoner.person.PersonIdent;
 
 import no.nav.familie.inntektsmelding.integrasjoner.person.PersonInfo;
 
+import no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.rest.ArbeidsforholdDto;
 import no.nav.familie.inntektsmelding.typer.entitet.AktørIdEntitet;
 
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ import no.nav.familie.inntektsmelding.integrasjoner.person.PersonTjeneste;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 public class ArbeidstakerTjenesteTest {
@@ -29,11 +31,14 @@ public class ArbeidstakerTjenesteTest {
     @Mock
     private PersonTjeneste personTjenesteMock;
 
+    @Mock
+    private ArbeidsforholdTjeneste arbeidsforholdTjenesteMock;
+
     private ArbeidstakerTjeneste arbeidstakerTjeneste;
 
     @BeforeEach
     void setUp() {
-        this.arbeidstakerTjeneste = new ArbeidstakerTjeneste(this.personTjenesteMock);
+        this.arbeidstakerTjeneste = new ArbeidstakerTjeneste(this.personTjenesteMock, this.arbeidsforholdTjenesteMock);
     }
 
     @Test
@@ -47,12 +52,20 @@ public class ArbeidstakerTjenesteTest {
         when(personTjenesteMock.hentPersonFraIdent(any(), any())).thenReturn(
             new PersonInfo("Test", "Filiokus", "Personesen", TILFELDIG_PERSON_IDENT, AktørIdEntitet.dummy(), LocalDate.now(), null)
         );
+        when(arbeidsforholdTjenesteMock.hentNåværendeArbeidsforhold(any())).thenReturn(
+            List.of(new ArbeidsforholdDto("Dummy arbeid", "000000000", "111111111"))
+        );
         var resultat = arbeidstakerTjeneste.slåOppArbeidstaker(TILFELDIG_PERSON_IDENT);
         assertThat(resultat).isNotNull();
         assertThat(resultat.fornavn()).isEqualTo("Test");
         assertThat(resultat.mellomnavn()).isEqualTo("Filiokus");
         assertThat(resultat.etternavn()).isEqualTo("Personesen");
         assertThat(resultat.arbeidsforhold().size()).isEqualTo(1);
+
+        var arbeidsforhold = resultat.arbeidsforhold().getFirst();
+        assertThat(arbeidsforhold.arbeidsgiver()).isEqualTo("Dummy arbeid");
+        assertThat(arbeidsforhold.underenhetId()).isEqualTo("000000000");
+        assertThat(arbeidsforhold.arbeidsforholdId()).isEqualTo("111111111");
     }
 
     @Test
@@ -72,6 +85,8 @@ public class ArbeidstakerTjenesteTest {
         when(personTjenesteMock.hentPersonFraIdent(any(), any())).thenReturn(
             new PersonInfo("Test", "Filiokus", "Personesen", TILFELDIG_PERSON_IDENT, AktørIdEntitet.dummy(), LocalDate.now(), null)
         );
+        when(arbeidsforholdTjenesteMock.hentNåværendeArbeidsforhold(any())).thenReturn(
+            List.of(new ArbeidsforholdDto("Dummy arbeidsgiver", "00000000", "123456789")));
 
         var resultat = arbeidstakerTjeneste.slåOppArbeidstaker(TILFELDIG_PERSON_IDENT);
 

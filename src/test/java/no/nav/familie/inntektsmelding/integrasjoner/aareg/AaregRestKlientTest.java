@@ -39,7 +39,15 @@ class AaregRestKlientTest {
     var fom = LocalDate.of(2024, 1, 1);
     var tom = LocalDate.of(2024, 3, 31);
 
-    var arbeidsforhold = new ArbeidsforholdDto();
+    var arbeidsforhold = new ArbeidsforholdDto(
+        "123",
+        1234L,
+        null,
+        null,
+        null,
+        null,
+        "ordinært");
+
     when(restClient.send(any(RestRequest.class), eq(ArbeidsforholdDto[].class)))
         .thenReturn(new ArbeidsforholdDto[] { arbeidsforhold });
 

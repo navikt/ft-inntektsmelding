@@ -10,55 +10,33 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class ArbeidsforholdDto {
-
+public record ArbeidsforholdDto(
     @JsonProperty("arbeidsforholdId")
-    private String arbeidsforholdId;
+    String arbeidsforholdId,
+    
     @JsonProperty("navArbeidsforholdId")
-    private Long navArbeidsforholdId;
+    Long navArbeidsforholdId,
+    
     @JsonProperty("arbeidsgiver")
-    private OpplysningspliktigArbeidsgiverDto arbeidsgiver;
+    OpplysningspliktigArbeidsgiverDto arbeidsgiver,
+    
     @JsonProperty("ansettelsesperiode")
-    private AnsettelsesperiodeDto ansettelsesperiode;
+    AnsettelsesperiodeDto ansettelsesperiode,
+    
     @JsonProperty("arbeidsavtaler")
-    private List<ArbeidsavtaleDto> arbeidsavtaler;
+    List<ArbeidsavtaleDto> arbeidsavtaler,
+    
     @JsonProperty("permisjonPermitteringer")
-    private List<PermisjonPermitteringDto> permisjonPermitteringer;
+    List<PermisjonPermitteringDto> permisjonPermitteringer,
+    
     @JsonProperty("type")
-    private String type; // (kodeverk: Arbeidsforholdtyper)
-
-    public String getArbeidsforholdId() {
-        return arbeidsforholdId;
-    }
-
-    public Long getNavArbeidsforholdId() {
-        return navArbeidsforholdId;
-    }
-
-    public OpplysningspliktigArbeidsgiverDto getArbeidsgiver() {
-        return arbeidsgiver;
-    }
-
-    public AnsettelsesperiodeDto getAnsettelsesperiode() {
-        return ansettelsesperiode;
-    }
-
-    public List<ArbeidsavtaleDto> getArbeidsavtaler() {
+    String type // (kodeverk: Arbeidsforholdtyper)
+) {
+    public List<ArbeidsavtaleDto> arbeidsavtaler() {
         return arbeidsavtaler != null ? arbeidsavtaler : List.of();
     }
 
-    public List<PermisjonPermitteringDto> getPermisjonPermitteringer() {
+    public List<PermisjonPermitteringDto> permisjonPermitteringer() {
         return permisjonPermitteringer != null ? permisjonPermitteringer : List.of();
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    @Override
-    public String toString() {
-        return "ArbeidsforholdDto{" + "arbeidsforholdId='" + arbeidsforholdId + '\'' + ", navArbeidsforholdId=" + navArbeidsforholdId
-            + ", arbeidsgiver=" + arbeidsgiver + ", ansettelsesperiode=" + ansettelsesperiode + ", arbeidsavtaler=" + arbeidsavtaler
-            + ", permisjonPermitteringer=" + permisjonPermitteringer + ", type='" + type + '\'' + '}';
     }
 }

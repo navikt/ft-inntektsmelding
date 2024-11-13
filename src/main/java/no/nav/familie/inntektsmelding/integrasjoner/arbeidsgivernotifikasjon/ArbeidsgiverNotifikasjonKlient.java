@@ -44,7 +44,7 @@ class ArbeidsgiverNotifikasjonKlient {
         LOG.info("FAGER: Opprett Sak");
         var resultat = query(new GraphQLRequest(request, projection), NySakMutationResponse.class).nySak();
         if (resultat instanceof NySakVellykket vellykket) {
-            LOG.info("Vellykket oppretelse av sak");
+            LOG.info("Vellykket opprettelse av sak");
             return vellykket.getId();
         } else {
             loggFeilmelding((Error) resultat, "opprettelse av ny sak");
@@ -68,7 +68,7 @@ class ArbeidsgiverNotifikasjonKlient {
         LOG.info("FAGER: Opprett Oppgave");
         var resultat = query(new GraphQLRequest(request, projection), NyOppgaveMutationResponse.class).nyOppgave();
         if (resultat instanceof NyOppgaveVellykket vellykket) {
-            LOG.info("Vellykket oppretelse av oppgave");
+            LOG.info("Vellykket opprettelse av oppgave");
             return vellykket.getId();
         } else {
             loggFeilmelding((Error) resultat, "opprettelse av ny oppgave");

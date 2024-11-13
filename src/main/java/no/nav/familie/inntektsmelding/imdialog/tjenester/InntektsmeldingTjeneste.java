@@ -158,7 +158,7 @@ public class InntektsmeldingTjeneste {
     private InntektsmeldingDialogDto.InntektsopplysningerDto lagInntekterDto(ForespørselEntitet forespørsel) {
         var inntektsopplysninger = inntektTjeneste.hentInntekt(forespørsel.getAktørId(), forespørsel.getSkjæringstidspunkt(), LocalDate.now(),
             forespørsel.getOrganisasjonsnummer());
-        LOG.debug(String.format("Inntektsopplysninger for forespørsel %s var %s", forespørsel.getUuid(), inntektsopplysninger.toString()));
+        LOG.info(String.format("Inntektsopplysninger for forespørsel %s var %s", forespørsel.getUuid(), inntektsopplysninger.toString()));
         var inntekter = inntektsopplysninger.måneder()
             .stream()
             .map(i -> new InntektsmeldingDialogDto.InntektsopplysningerDto.MånedsinntektDto(i.månedÅr().atDay(1),

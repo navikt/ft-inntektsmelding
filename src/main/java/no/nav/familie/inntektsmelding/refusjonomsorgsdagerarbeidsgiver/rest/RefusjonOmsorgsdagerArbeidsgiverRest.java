@@ -1,32 +1,26 @@
 package no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.rest;
 
+import static no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.rest.RefusjonOmsorgsdagerArbeidsgiverRest.BASE_PATH;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
-import no.nav.familie.inntektsmelding.imdialog.tjenester.InntektsmeldingTjeneste;
 import no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.tjenester.ArbeidstakerTjeneste;
 import no.nav.familie.inntektsmelding.server.auth.api.AutentisertMedTokenX;
 import no.nav.familie.inntektsmelding.server.auth.api.Tilgangskontrollert;
-import no.nav.familie.inntektsmelding.server.tilgangsstyring.Tilgang;
-
-import org.apache.commons.lang3.NotImplementedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.rest.RefusjonOmsorgsdagerArbeidsgiverRest.BASE_PATH;
 
 @AutentisertMedTokenX
 @ApplicationScoped
@@ -55,8 +49,7 @@ public class RefusjonOmsorgsdagerArbeidsgiverRest {
     @Operation(description = "Henter opplysninger om arbeidstaker, gitt et fødselsnummer.", tags = "imdialog")
     @Tilgangskontrollert
     public Response slåOppArbeidstaker(
-        @Parameter(description = "Datapakke som inneholder fødselsnummeret til en arbeidstaker") @NotNull
-        @Valid SlåOppArbeidstakerDto slåOppArbeidstakerDto) {
+            @Parameter(description = "Datapakke som inneholder fødselsnummeret til en arbeidstaker") @NotNull @Valid SlåOppArbeidstakerDto slåOppArbeidstakerDto) {
 
         LOG.info("Slår opp arbeidstaker med fødselsnummer {}", slåOppArbeidstakerDto.fødselsnummer());
         var dto = arbeidstakerTjeneste.slåOppArbeidstaker(slåOppArbeidstakerDto.fødselsnummer());

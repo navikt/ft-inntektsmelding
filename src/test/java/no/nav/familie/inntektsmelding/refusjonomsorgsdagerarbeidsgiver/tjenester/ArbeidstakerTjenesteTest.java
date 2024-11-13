@@ -55,4 +55,32 @@ public class ArbeidstakerTjenesteTest {
         assertThat(resultat.arbeidsforhold().size()).isEqualTo(1);
     }
 
+    @Test
+    public void returnerer_arbeidstakerinfo_uten_mellomnavn() {
+        when(personTjenesteMock.hentPersonFraIdent(any(), any())).thenReturn(
+            new PersonInfo("Test", null, "Personesen", TILFELDIG_PERSON_IDENT, AktørIdEntitet.dummy(), LocalDate.now(), null)
+        );
+        var resultat = arbeidstakerTjeneste.slåOppArbeidstaker(TILFELDIG_PERSON_IDENT);
+        assertThat(resultat).isNotNull();
+        assertThat(resultat.fornavn()).isEqualTo("Test");
+        assertThat(resultat.mellomnavn()).isNull();
+        assertThat(resultat.etternavn()).isEqualTo("Personesen");
+    }
+
+    @Test
+    public void verifiserer_arbeidsforhold_detaljer() {
+        when(personTjenesteMock.hentPersonFraIdent(any(), any())).thenReturn(
+            new PersonInfo("Test", "Filiokus", "Personesen", TILFELDIG_PERSON_IDENT, AktørIdEntitet.dummy(), LocalDate.now(), null)
+        );
+
+        var resultat = arbeidstakerTjeneste.slåOppArbeidstaker(TILFELDIG_PERSON_IDENT);
+
+        assertThat(resultat.arbeidsforhold().size()).isEqualTo(1);
+        var arbeidsforhold = resultat.arbeidsforhold().get(0);
+
+        assertThat(arbeidsforhold.arbeidsgiver()).isEqualTo("Dummy arbeidsgiver");
+        assertThat(arbeidsforhold.underenhetId()).isEqualTo("00000000");
+        assertThat(arbeidsforhold.arbeidsforholdId()).isEqualTo("123456789");
+    }
+
 }

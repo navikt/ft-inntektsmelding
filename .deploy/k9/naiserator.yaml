@@ -93,3 +93,4 @@ spec:
         - host: ereg-services.{{environment}}-fss-pub.nais.io
         - host: k9sak-api.{{environment}}-fss-pub.nais.io
         - host: dokarkiv.{{environment}}-fss-pub.nais.io
+        - host: aareg-services-nais.arbeidsforhold

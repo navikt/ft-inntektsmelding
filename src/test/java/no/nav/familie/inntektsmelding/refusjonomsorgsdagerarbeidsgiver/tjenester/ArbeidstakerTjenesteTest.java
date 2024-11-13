@@ -8,6 +8,7 @@ import no.nav.familie.inntektsmelding.integrasjoner.person.PersonIdent;
 
 import no.nav.familie.inntektsmelding.integrasjoner.person.PersonInfo;
 
+import no.nav.familie.inntektsmelding.pip.AltinnTilgangTjeneste;
 import no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.rest.ArbeidsforholdDto;
 import no.nav.familie.inntektsmelding.typer.entitet.AktørIdEntitet;
 
@@ -34,11 +35,14 @@ public class ArbeidstakerTjenesteTest {
     @Mock
     private ArbeidsforholdTjeneste arbeidsforholdTjenesteMock;
 
+    @Mock
+    private AltinnTilgangTjeneste altinnTilgangTjenesteMock;
+
     private ArbeidstakerTjeneste arbeidstakerTjeneste;
 
     @BeforeEach
     void setUp() {
-        this.arbeidstakerTjeneste = new ArbeidstakerTjeneste(this.personTjenesteMock, this.arbeidsforholdTjenesteMock);
+        this.arbeidstakerTjeneste = new ArbeidstakerTjeneste(this.personTjenesteMock, this.arbeidsforholdTjenesteMock, this.altinnTilgangTjenesteMock);
     }
 
     @Test
@@ -55,6 +59,8 @@ public class ArbeidstakerTjenesteTest {
         when(arbeidsforholdTjenesteMock.hentNåværendeArbeidsforhold(any())).thenReturn(
             List.of(new ArbeidsforholdDto("Dummy arbeid", "000000000", "111111111"))
         );
+        when(altinnTilgangTjenesteMock.harTilgangTilBedriften(any())).thenReturn(true);
+
         var resultat = arbeidstakerTjeneste.slåOppArbeidstaker(TILFELDIG_PERSON_IDENT);
         assertThat(resultat).isNotNull();
         assertThat(resultat.fornavn()).isEqualTo("Test");
@@ -73,7 +79,9 @@ public class ArbeidstakerTjenesteTest {
         when(personTjenesteMock.hentPersonFraIdent(any(), any())).thenReturn(
             new PersonInfo("Test", null, "Personesen", TILFELDIG_PERSON_IDENT, AktørIdEntitet.dummy(), LocalDate.now(), null)
         );
+
         var resultat = arbeidstakerTjeneste.slåOppArbeidstaker(TILFELDIG_PERSON_IDENT);
+
         assertThat(resultat).isNotNull();
         assertThat(resultat.fornavn()).isEqualTo("Test");
         assertThat(resultat.mellomnavn()).isNull();
@@ -87,6 +95,7 @@ public class ArbeidstakerTjenesteTest {
         );
         when(arbeidsforholdTjenesteMock.hentNåværendeArbeidsforhold(any())).thenReturn(
             List.of(new ArbeidsforholdDto("Dummy arbeidsgiver", "00000000", "123456789")));
+        when(altinnTilgangTjenesteMock.harTilgangTilBedriften(any())).thenReturn(true);
 
         var resultat = arbeidstakerTjeneste.slåOppArbeidstaker(TILFELDIG_PERSON_IDENT);
 
@@ -98,4 +107,27 @@ public class ArbeidstakerTjenesteTest {
         assertThat(arbeidsforhold.arbeidsforholdId()).isEqualTo("123456789");
     }
 
+    @Test
+    public void filtrerer_ut_arbeidsforhold_man_ikke_har_tilgang_til() {
+        when(personTjenesteMock.hentPersonFraIdent(any(), any())).thenReturn(
+            new PersonInfo("Test", "Filiokus", "Personesen", TILFELDIG_PERSON_IDENT, AktørIdEntitet.dummy(), LocalDate.now(), null)
+        );
+        when(arbeidsforholdTjenesteMock.hentNåværendeArbeidsforhold(any())).thenReturn(
+            List.of(
+                new ArbeidsforholdDto("Dummy arbeidsgiver", "00000000", "123456789"),
+                new ArbeidsforholdDto("Dummy arbeidsgiver", "00000001", "123456789")
+            )
+        );
+        when(altinnTilgangTjenesteMock.harTilgangTilBedriften("00000000")).thenReturn(false);
+        when(altinnTilgangTjenesteMock.harTilgangTilBedriften("00000001")).thenReturn(true);
+
+        var resultat = arbeidstakerTjeneste.slåOppArbeidstaker(TILFELDIG_PERSON_IDENT);
+
+        assertThat(resultat.arbeidsforhold().size()).isEqualTo(1);
+        var arbeidsforhold = resultat.arbeidsforhold().getFirst();
+
+        assertThat(arbeidsforhold.arbeidsgiver()).isEqualTo("Dummy arbeidsgiver");
+        assertThat(arbeidsforhold.underenhetId()).isEqualTo("00000001");
+        assertThat(arbeidsforhold.arbeidsforholdId()).isEqualTo("123456789");
+    }
 }

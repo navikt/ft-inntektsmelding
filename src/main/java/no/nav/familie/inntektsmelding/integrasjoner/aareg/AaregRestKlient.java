@@ -33,8 +33,7 @@ public class AaregRestKlient {
     private final RestConfig restConfig;
 
     public AaregRestKlient() {
-        this.restClient = RestClient.client();
-        this.restConfig = RestConfig.forClient(this.getClass());
+        this(RestClient.client());
     }
 
     public AaregRestKlient(RestClient restClient) {

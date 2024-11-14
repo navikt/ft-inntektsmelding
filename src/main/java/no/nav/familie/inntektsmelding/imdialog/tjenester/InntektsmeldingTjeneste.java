@@ -146,11 +146,7 @@ public class InntektsmeldingTjeneste {
     }
 
     private InntektsmeldingDialogDto.InnsenderDto lagInnmelderDto(Ytelsetype ytelsetype) {
-        if (!KontekstHolder.harKontekst() || !IdentType.EksternBruker.equals(KontekstHolder.getKontekst().getIdentType())) {
-            throw new IllegalStateException("Mangler innlogget bruker kontekst.");
-        }
-        var pid = KontekstHolder.getKontekst().getUid();
-        var personInfo = personTjeneste.hentPersonFraIdent(PersonIdent.fra(pid), ytelsetype);
+        var personInfo = personTjeneste.hentInnloggetPerson(ytelsetype);
         return new InntektsmeldingDialogDto.InnsenderDto(personInfo.fornavn(), personInfo.mellomnavn(), personInfo.etternavn(),
             personInfo.telefonnummer());
     }

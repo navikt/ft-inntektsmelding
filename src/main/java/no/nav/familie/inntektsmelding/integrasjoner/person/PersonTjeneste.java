@@ -9,6 +9,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.ProcessingException;
 
+import no.nav.vedtak.sikkerhet.kontekst.IdentType;
+import no.nav.vedtak.sikkerhet.kontekst.KontekstHolder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,6 +77,14 @@ public class PersonTjeneste {
 
         return new PersonInfo(navn.getFornavn(), navn.getMellomnavn(), navn.getEtternavn(), personIdent, null, mapFødselsdato(person),
             mapTelefonnummer(person));
+    }
+
+    public PersonInfo hentInnloggetPerson(Ytelsetype ytelsetype) {
+        if (!KontekstHolder.harKontekst() || !IdentType.EksternBruker.equals(KontekstHolder.getKontekst().getIdentType())) {
+            throw new IllegalStateException("Mangler innlogget bruker kontekst.");
+        }
+        var pid = KontekstHolder.getKontekst().getUid();
+        return hentPersonFraIdent(PersonIdent.fra(pid), ytelsetype);
     }
 
     public PersonIdent finnPersonIdentForAktørId(AktørIdEntitet aktørIdEntitet) {

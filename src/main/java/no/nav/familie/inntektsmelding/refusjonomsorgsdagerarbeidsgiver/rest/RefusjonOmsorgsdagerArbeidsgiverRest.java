@@ -30,7 +30,7 @@ public class RefusjonOmsorgsdagerArbeidsgiverRest {
     private static final Logger LOG = LoggerFactory.getLogger(RefusjonOmsorgsdagerArbeidsgiverRest.class);
 
     public static final String BASE_PATH = "/imdialog/refusjon-omsorgsdager-arbeidsgiver";
-    private static final String SLÅ_OPP_ARBEIDSTAKER = BASE_PATH + "/arbeidstaker";
+    private static final String SLÅ_OPP_ARBEIDSTAKER = "/arbeidstaker";
 
     private ArbeidstakerTjeneste arbeidstakerTjeneste;
 

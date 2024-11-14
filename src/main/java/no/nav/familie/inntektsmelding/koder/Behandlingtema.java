@@ -6,8 +6,7 @@ public enum Behandlingtema {
     SVANGERSKAPSPENGER("ab0126"),
     PLEIEPENGER_SYKT_BARN("ab0320"),
     PLEIEPENGER_LIVETS_SLUTTFASE("ab0094"),
-    OMSORGSPENGER("ab0149"),
-    OMSORGSDAGER("TODO"); // TODO: Hva er offisiell kode for OMSORGSDAGER?
+    OMSORGSPENGER("ab0149");
 
     private final String offisiellKode;
 

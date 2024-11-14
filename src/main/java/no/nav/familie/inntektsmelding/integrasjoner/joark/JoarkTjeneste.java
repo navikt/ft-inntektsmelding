@@ -107,14 +107,14 @@ public class JoarkTjeneste {
     private Fagsystem utledFagsystemKode(Ytelsetype ytelsetype) {
         return switch (ytelsetype) {
             case FORELDREPENGER, SVANGERSKAPSPENGER -> Fagsystem.FPSAK;
-            case PLEIEPENGER_SYKT_BARN, PLEIEPENGER_NÆRSTÅENDE, OMSORGSPENGER, OPPLÆRINGSPENGER, OMSORGSDAGER -> Fagsystem.K9SAK;
+            case PLEIEPENGER_SYKT_BARN, PLEIEPENGER_NÆRSTÅENDE, OMSORGSPENGER, OPPLÆRINGSPENGER -> Fagsystem.K9SAK;
         };
     }
 
     private String mapTema(Ytelsetype ytelsetype) {
         return switch (ytelsetype) {
             case FORELDREPENGER, SVANGERSKAPSPENGER -> "FOR";
-            case PLEIEPENGER_SYKT_BARN, PLEIEPENGER_NÆRSTÅENDE, OMSORGSPENGER, OPPLÆRINGSPENGER, OMSORGSDAGER -> "OMS";
+            case PLEIEPENGER_SYKT_BARN, PLEIEPENGER_NÆRSTÅENDE, OMSORGSPENGER, OPPLÆRINGSPENGER -> "OMS";
         };
     }
 
@@ -125,7 +125,6 @@ public class JoarkTjeneste {
             case PLEIEPENGER_SYKT_BARN -> Behandlingtema.PLEIEPENGER_SYKT_BARN.getOffisiellKode();
             case PLEIEPENGER_NÆRSTÅENDE -> Behandlingtema.PLEIEPENGER_LIVETS_SLUTTFASE.getOffisiellKode();
             case OMSORGSPENGER -> Behandlingtema.OMSORGSPENGER.getOffisiellKode();
-            case OMSORGSDAGER -> Behandlingtema.OMSORGSDAGER.getOffisiellKode();
             case OPPLÆRINGSPENGER ->
                 throw new IllegalArgumentException("Finner ikke behandlingtema for ytelsetype " + ytelsetype); // TODO Hva skal inn her?
         };

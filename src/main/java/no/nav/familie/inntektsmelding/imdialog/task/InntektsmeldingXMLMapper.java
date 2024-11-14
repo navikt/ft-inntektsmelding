@@ -185,7 +185,6 @@ public class InntektsmeldingXMLMapper {
             case SVANGERSKAPSPENGER -> "Svangerskapspenger";
             case OPPLÆRINGSPENGER -> "Opplaeringspenger";
             case OMSORGSPENGER -> "Omsorgspenger";
-            case OMSORGSDAGER -> "Omsorgsdager";
             case PLEIEPENGER_SYKT_BARN -> "PleiepengerBarn";
             case PLEIEPENGER_NÆRSTÅENDE -> "PleiepengerNaerstaaende";
         };

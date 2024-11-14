@@ -36,7 +36,6 @@ public class KodeverkMapper {
             case FORELDREPENGER -> Ytelsetype.FORELDREPENGER;
             case SVANGERSKAPSPENGER -> Ytelsetype.SVANGERSKAPSPENGER;
             case OMSORGSPENGER -> Ytelsetype.OMSORGSPENGER;
-            case OMSORGSDAGER -> Ytelsetype.OMSORGSDAGER;
             case OPPLÆRINGSPENGER -> Ytelsetype.OPPLÆRINGSPENGER;
             case PLEIEPENGER_SYKT_BARN -> Ytelsetype.PLEIEPENGER_SYKT_BARN;
             case PLEIEPENGER_NÆRSTÅENDE -> Ytelsetype.PLEIEPENGER_NÆRSTÅENDE;
@@ -51,7 +50,6 @@ public class KodeverkMapper {
             case OPPLÆRINGSPENGER -> YtelseTypeDto.OPPLÆRINGSPENGER;
             case PLEIEPENGER_SYKT_BARN -> YtelseTypeDto.PLEIEPENGER_SYKT_BARN;
             case PLEIEPENGER_NÆRSTÅENDE -> YtelseTypeDto.PLEIEPENGER_NÆRSTÅENDE;
-            case OMSORGSDAGER ->  YtelseTypeDto.OMSORGSDAGER;
         };
     }
 

@@ -30,7 +30,7 @@ public class ArbeidstakerTjeneste {
     }
 
     public SlåOppArbeidstakerResponseDto slåOppArbeidstaker(PersonIdent ident) {
-        var personInfo = personTjeneste.hentPersonFraIdent(ident, Ytelsetype.OMSORGSDAGER);
+        var personInfo = personTjeneste.hentPersonFraIdent(ident, Ytelsetype.OMSORGSPENGER);
 
         // TODO: Sjekk tilganger til å hente arbeidsforhold fra Altinn
 

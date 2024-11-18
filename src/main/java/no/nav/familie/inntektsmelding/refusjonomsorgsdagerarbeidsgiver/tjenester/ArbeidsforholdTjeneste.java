@@ -4,7 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 import no.nav.familie.inntektsmelding.integrasjoner.aareg.AaregRestKlient;
 import no.nav.familie.inntektsmelding.integrasjoner.person.PersonIdent;
-import no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.rest.ArbeidsforholdDto;
+import no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.rest.dto.ArbeidsforholdDto;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

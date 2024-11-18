@@ -9,7 +9,7 @@ import no.nav.familie.inntektsmelding.integrasjoner.person.PersonIdent;
 import no.nav.familie.inntektsmelding.integrasjoner.person.PersonInfo;
 
 import no.nav.familie.inntektsmelding.pip.AltinnTilgangTjeneste;
-import no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.rest.ArbeidsforholdDto;
+import no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.rest.dto.ArbeidsforholdDto;
 import no.nav.familie.inntektsmelding.typer.entitet.AktørIdEntitet;
 
 import org.junit.jupiter.api.Test;

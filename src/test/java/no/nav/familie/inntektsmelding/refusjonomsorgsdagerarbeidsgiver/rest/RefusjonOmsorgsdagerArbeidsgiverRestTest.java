@@ -7,6 +7,10 @@ import static org.mockito.Mockito.when;
 
 import jakarta.ws.rs.NotFoundException;
 
+import no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.rest.dto.InnsenderDto;
+import no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.rest.dto.OpplysningerResponseDto;
+import no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.rest.dto.SlåOppArbeidstakerDto;
+import no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.rest.dto.SlåOppArbeidstakerResponseDto;
 import no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.tjenester.OpplysningerTjeneste;
 
 import org.junit.jupiter.api.BeforeEach;

@@ -3,8 +3,8 @@ package no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.tjeneste
 import jakarta.enterprise.context.ApplicationScoped;
 import no.nav.familie.inntektsmelding.integrasjoner.person.PersonTjeneste;
 import no.nav.familie.inntektsmelding.koder.Ytelsetype;
-import no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.rest.InnsenderDto;
-import no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.rest.OpplysningerResponseDto;
+import no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.rest.dto.InnsenderDto;
+import no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.rest.dto.OpplysningerResponseDto;
 
 @ApplicationScoped
 public class OpplysningerTjeneste {

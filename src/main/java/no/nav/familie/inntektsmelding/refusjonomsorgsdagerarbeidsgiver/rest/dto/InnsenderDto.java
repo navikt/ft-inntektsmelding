@@ -1,4 +1,4 @@
-package no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.rest;
+package no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.rest.dto;
 
 import jakarta.validation.constraints.NotNull;
 

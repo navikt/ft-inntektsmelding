@@ -10,10 +10,18 @@ public class AltinnTilgangTjeneste {
     private final AltinnAutoriseringKlient altinnKlient;
 
     public AltinnTilgangTjeneste() {
-        this.altinnKlient = AltinnAutoriseringKlient.instance();
+        this(AltinnAutoriseringKlient.instance());
+    }
+
+    public AltinnTilgangTjeneste(AltinnAutoriseringKlient altinnKlient) {
+        this.altinnKlient = altinnKlient;
+    }
+
+    public boolean harTilgangTilBedriften(String orgNr) {
+        return altinnKlient.harTilgangTilBedriften(orgNr);
     }
 
     public boolean manglerTilgangTilBedriften(String orgNr) {
-        return !altinnKlient.harTilgangTilBedriften(orgNr);
+        return !harTilgangTilBedriften(orgNr);
     }
 }

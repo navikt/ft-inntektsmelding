@@ -15,6 +15,8 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import no.nav.familie.inntektsmelding.refusjonomsorgsdagerarbeidsgiver.rest.dto.InnsendingSoknadDto;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +38,7 @@ public class RefusjonOmsorgsdagerArbeidsgiverRest {
     public static final String BASE_PATH = "/imdialog/refusjon-omsorgsdager-arbeidsgiver";
     private static final String SLÅ_OPP_ARBEIDSTAKER = "/arbeidstaker";
     private static final String OPPLYSNINGER = "/opplysninger";
+    private static final String SEND_INN_SØKNAD = "/send-inn-soknad";
 
     private ArbeidstakerTjeneste arbeidstakerTjeneste;
     private OpplysningerTjeneste opplysningerTjeneste;
@@ -76,4 +79,19 @@ public class RefusjonOmsorgsdagerArbeidsgiverRest {
         var dto = opplysningerTjeneste.hentOpplysninger();
         return Response.ok(dto).build();
     }
+
+    @POST
+    @Path(SEND_INN_SØKNAD)
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Operation(description = "Mottar søknad om refusjon av omsorgspenger for arbeidsgiver.", tags = "imdialog")
+    @Tilgangskontrollert
+    public Response sendInnSøknad(
+        @Parameter(description = "Datapakke som inneholder søknad om refusjon av omsorgspenger for arbeidsgiver") @NotNull @Valid
+        InnsendingSoknadDto innsendingSoknadDto
+    ) {
+        LOG.info("Mottatt søknad om refusjon av omsorgspenger for arbeidsgiver: {}", innsendingSoknadDto);
+        // TODO: Implementer denne
+        return Response.ok().build();
+    }
+
 }

@@ -7,6 +7,8 @@ import java.util.Set;
 
 import jakarta.ws.rs.ApplicationPath;
 
+import no.nav.familie.inntektsmelding.server.exceptions.SlåOppArbeidstakerExceptionMapper;
+
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 import org.slf4j.Logger;
@@ -49,6 +51,7 @@ public class ApiConfig extends ResourceConfig {
         register(ConstraintViolationMapper.class);
         register(JsonMappingExceptionMapper.class);
         register(JsonParseExceptionMapper.class);
+        register(SlåOppArbeidstakerExceptionMapper.class);
     }
 
     private Set<Class<?>> getApplicationClasses() {

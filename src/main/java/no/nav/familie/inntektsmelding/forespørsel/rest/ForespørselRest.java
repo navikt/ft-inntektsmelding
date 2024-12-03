@@ -1,6 +1,8 @@
 package no.nav.familie.inntektsmelding.forespørsel.rest;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -58,23 +60,45 @@ public class ForespørselRest {
     @Path("/opprett")
     @Tilgangskontrollert
     public Response opprettForespørsel(@Valid @NotNull OpprettForespørselRequest request) {
-        LOG.info("Mottok forespørsel om inntektsmeldingoppgave på fagsakSaksnummer {}", request.fagsakSaksnummer());
         sjekkErSystemkall();
-        //legger på denne sjekken inntil vi tar i mot ny liste av orgnumre
-        if (request.orgnummer() == null) {
+
+        if (request.orgnummer() != null) {
+            LOG.info("Mottok forespørsel om inntektsmeldingoppgave på fagsakSaksnummer {}", request.fagsakSaksnummer());
+            var bleForespørselOpprettet = forespørselBehandlingTjeneste.håndterInnkommendeForespørsel(request.skjæringstidspunkt(),
+                KodeverkMapper.mapYtelsetype(request.ytelsetype()),
+                new AktørIdEntitet(request.aktørId().id()),
+                new OrganisasjonsnummerDto(request.orgnummer().orgnr()),
+                request.fagsakSaksnummer(),
+                request.førsteUttaksdato());
+
+            if (ForespørselResultat.FORESPØRSEL_OPPRETTET.equals(bleForespørselOpprettet)) {
+                MetrikkerTjeneste.loggForespørselOpprettet(KodeverkMapper.mapYtelsetype(request.ytelsetype()));
+            }
+            return Response.ok(new OpprettForespørselResponse(bleForespørselOpprettet)).build();
+        } else if (request.organisasjonsnumre() != null){
+            if (request.organisasjonsnumre().isEmpty()) {
+                return Response.status(Response.Status.NO_CONTENT).build();
+            }
+
+            LOG.info("Mottok forespørsel om inntektsmeldingoppgave på fagsakSaksnummer {} for orgnumrene: {} ", request.fagsakSaksnummer(), request.organisasjonsnumre());
+            List<OpprettForespørselResponsNy.OrganisasjonsnummerMedStatus> organisasjonsnumreMedStatus = new ArrayList<>();
+            request.organisasjonsnumre().forEach(organisasjonsnummer -> {
+                var bleForespørselOpprettet = forespørselBehandlingTjeneste.håndterInnkommendeForespørsel(request.skjæringstidspunkt(),
+                    KodeverkMapper.mapYtelsetype(request.ytelsetype()),
+                    new AktørIdEntitet(request.aktørId().id()),
+                    new OrganisasjonsnummerDto(organisasjonsnummer.orgnr()),
+                    request.fagsakSaksnummer(),
+                    request.førsteUttaksdato());
+
+                if (ForespørselResultat.FORESPØRSEL_OPPRETTET.equals(bleForespørselOpprettet)) {
+                    MetrikkerTjeneste.loggForespørselOpprettet(KodeverkMapper.mapYtelsetype(request.ytelsetype()));
+                }
+                organisasjonsnumreMedStatus.add(new OpprettForespørselResponsNy.OrganisasjonsnummerMedStatus(organisasjonsnummer, bleForespørselOpprettet));
+            });
+            return Response.ok(new OpprettForespørselResponsNy(organisasjonsnumreMedStatus)).build();
+        } else {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        var bleForespørselOpprettet = forespørselBehandlingTjeneste.håndterInnkommendeForespørsel(request.skjæringstidspunkt(),
-            KodeverkMapper.mapYtelsetype(request.ytelsetype()),
-            new AktørIdEntitet(request.aktørId().id()),
-            new OrganisasjonsnummerDto(request.orgnummer().orgnr()),
-            request.fagsakSaksnummer(),
-            request.førsteUttaksdato());
-
-        if (bleForespørselOpprettet.equals(ForespørselResultat.FORESPØRSEL_OPPRETTET)) {
-            MetrikkerTjeneste.loggForespørselOpprettet(KodeverkMapper.mapYtelsetype(request.ytelsetype()));
-        }
-        return Response.ok(new OpprettForespørselResponse(bleForespørselOpprettet)).build();
     }
 
     @POST

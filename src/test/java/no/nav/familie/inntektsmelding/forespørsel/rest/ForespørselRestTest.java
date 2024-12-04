@@ -80,7 +80,7 @@ public class ForespørselRestTest {
 
         var fagsakSaksnummer = new SaksnummerDto("SAK");
         var response = forespørselRest.opprettForespørsel(
-            new OpprettForespørselRequest(aktørId, orgnummer, LocalDate.now(), YtelseTypeDto.PLEIEPENGER_SYKT_BARN, fagsakSaksnummer, LocalDate.now().plusDays(5), List.of(orgnummer, orgnummer2)));
+            new OpprettForespørselRequest(aktørId, null, LocalDate.now(), YtelseTypeDto.PLEIEPENGER_SYKT_BARN, fagsakSaksnummer, LocalDate.now().plusDays(5), List.of(orgnummer, orgnummer2)));
 
         var forventetResultat = new OpprettForespørselResponsNy(List.of(
             new OpprettForespørselResponsNy.OrganisasjonsnummerMedStatus(orgnummer, ForespørselResultat.FORESPØRSEL_OPPRETTET),

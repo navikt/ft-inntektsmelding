@@ -47,6 +47,7 @@ import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
 public class ForespørselBehandlingTjenesteImplTest extends EntityManagerAwareTest {
 
     private static final String BRREG_ORGNUMMER = "974760673";
+    private static final String BRREG_ORGNUMMER2 = "450674427";
     private static final String AKTØR_ID = "1234567891234";
     private static final String SAK_ID = "1";
     private static final String OPPGAVE_ID = "2";
@@ -185,6 +186,43 @@ public class ForespørselBehandlingTjenesteImplTest extends EntityManagerAwareTe
             new SaksnummerDto(SAKSNUMMMER),
             FØRSTE_UTTAKSDATO.plusDays(1));
 
+        assertThat(resultat2).isEqualTo(ForespørselResultat.FORESPØRSEL_OPPRETTET);
+    }
+
+    @Test
+    void skal_opprette_ny_forespørsel_med_nytt_stp_og_sette_mottatte_forespørsel_med_tidligere_stp_til_utgått() {
+        mockInfoForOpprettelse(AKTØR_ID, YTELSETYPE, BRREG_ORGNUMMER, SAK_ID, OPPGAVE_ID);
+        when(organisasjonTjeneste.finnOrganisasjon(BRREG_ORGNUMMER)).thenReturn(new Organisasjon("test org", BRREG_ORGNUMMER));
+        var saksnummerDto = new SaksnummerDto(SAKSNUMMMER);
+
+        forespørselBehandlingTjeneste.håndterInnkommendeForespørsel(SKJÆRINGSTIDSPUNKT,
+            YTELSETYPE,
+            new AktørIdEntitet(AKTØR_ID),
+            new OrganisasjonsnummerDto(BRREG_ORGNUMMER),
+            saksnummerDto,
+            FØRSTE_UTTAKSDATO);
+
+        var lagret = forespørselRepository.hentForespørsler(saksnummerDto).getFirst();
+
+        var fpEntitet = forespørselBehandlingTjeneste.ferdigstillForespørsel(lagret.getUuid(),
+            lagret.getAktørId(),
+            new OrganisasjonsnummerDto(lagret.getOrganisasjonsnummer()),
+            lagret.getFørsteUttaksdato().orElse(lagret.getSkjæringstidspunkt()),
+            LukkeÅrsak.ORDINÆR_INNSENDING);
+
+        assertThat(fpEntitet.getStatus()).isEqualTo(ForespørselStatus.FERDIG);
+
+        var resultat2 = forespørselBehandlingTjeneste.håndterInnkommendeForespørsel(SKJÆRINGSTIDSPUNKT.plusMonths(2),
+            YTELSETYPE,
+            new AktørIdEntitet(AKTØR_ID),
+            new OrganisasjonsnummerDto(BRREG_ORGNUMMER),
+            new SaksnummerDto(SAKSNUMMMER),
+            FØRSTE_UTTAKSDATO);
+
+        var forrigeForespørsel = forespørselRepository.hentForespørsel(lagret.getUuid());
+
+        clearHibernateCache();
+        assertThat(forrigeForespørsel.get().getStatus()).isEqualTo(ForespørselStatus.UTGÅTT);
         assertThat(resultat2).isEqualTo(ForespørselResultat.FORESPØRSEL_OPPRETTET);
     }
 

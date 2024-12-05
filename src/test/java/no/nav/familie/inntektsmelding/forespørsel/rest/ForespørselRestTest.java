@@ -3,12 +3,16 @@ package no.nav.familie.inntektsmelding.forespørsel.rest;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
+
+import no.nav.vedtak.felles.integrasjon.rest.RestRequest;
 
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +38,7 @@ import no.nav.vedtak.mapper.json.DefaultJsonMapper;
 public class ForespørselRestTest {
 
     private static final String BRREG_ORGNUMMER = "974760673";
+    private static final String ORGNUMMER_TEST = "450674427";
 
     private ForespørselRest forespørselRest;
     private ForespørselBehandlingTjeneste forespørselBehandlingTjeneste;
@@ -55,12 +60,36 @@ public class ForespørselRestTest {
 
         var fagsakSaksnummer = new SaksnummerDto("SAK");
         var response = forespørselRest.opprettForespørsel(
-            new OpprettForespørselRequest(aktørId, orgnummer, LocalDate.now(), YtelseTypeDto.PLEIEPENGER_SYKT_BARN, fagsakSaksnummer, LocalDate.now().plusDays(5), Collections.emptyList()));
+            new OpprettForespørselRequest(aktørId, null, LocalDate.now(), YtelseTypeDto.PLEIEPENGER_SYKT_BARN, fagsakSaksnummer, LocalDate.now().plusDays(5), List.of(orgnummer)));
+
+        var forventetResultat = new OpprettForespørselResponsNy(List.of(new OpprettForespørselResponsNy.OrganisasjonsnummerMedStatus(orgnummer, ForespørselResultat.FORESPØRSEL_OPPRETTET)));
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK_200);
-        assertThat(response.getEntity()).isEqualTo(new OpprettForespørselResponse(ForespørselResultat.FORESPØRSEL_OPPRETTET));
+        assertThat(response.getEntity()).isEqualTo(forventetResultat);
         verify(forespørselBehandlingTjeneste).håndterInnkommendeForespørsel(eq(LocalDate.now()), eq(Ytelsetype.PLEIEPENGER_SYKT_BARN),
             eq(new AktørIdEntitet(aktørId.id())), eq(orgnummer), eq(fagsakSaksnummer), eq(LocalDate.now().plusDays(5)));
+    }
+
+    @Test
+    void skal_opprette_forespørsel_for_flere_organiasjonsnumre() {
+        mockForespørsel();
+
+        var orgnummer = new OrganisasjonsnummerDto(BRREG_ORGNUMMER);
+        var orgnummer2 = new OrganisasjonsnummerDto(ORGNUMMER_TEST);
+        var aktørId = new AktørIdDto("1234567890134");
+
+        var fagsakSaksnummer = new SaksnummerDto("SAK");
+        var response = forespørselRest.opprettForespørsel(
+            new OpprettForespørselRequest(aktørId, null, LocalDate.now(), YtelseTypeDto.PLEIEPENGER_SYKT_BARN, fagsakSaksnummer, LocalDate.now().plusDays(5), List.of(orgnummer, orgnummer2)));
+
+        var forventetResultat = new OpprettForespørselResponsNy(List.of(
+            new OpprettForespørselResponsNy.OrganisasjonsnummerMedStatus(orgnummer, ForespørselResultat.FORESPØRSEL_OPPRETTET),
+            new OpprettForespørselResponsNy.OrganisasjonsnummerMedStatus(orgnummer2, ForespørselResultat.FORESPØRSEL_OPPRETTET)));
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK_200);
+        assertThat(response.getEntity()).isEqualTo(forventetResultat);
+
+        verify(forespørselBehandlingTjeneste, times(2)).håndterInnkommendeForespørsel(any(), any(), any(), any(), any(), any());
     }
 
     @Test

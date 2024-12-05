@@ -89,12 +89,13 @@ class ForespørselBehandlingTjenesteImpl implements ForespørselBehandlingTjenes
         return ForespørselResultat.FORESPØRSEL_OPPRETTET;
     }
 
-    private void settFerdigeForespørslerForTidligereStpTilUtgått(LocalDate skjæringstidspunkt, SaksnummerDto fagsakSaksnummer, OrganisasjonsnummerDto organisasjonsnummer) {
-        LOG.info("ForespørselBehandlingTjenesteImpl: settFerdigeForespørslerForTidligereStpTilUtgått for saksnummer: {}, orgnummer: {} med stp: {}", fagsakSaksnummer, organisasjonsnummer, skjæringstidspunkt );
+    private void settFerdigeForespørslerForTidligereStpTilUtgått(LocalDate skjæringstidspunktFraRequest, SaksnummerDto fagsakSaksnummer, OrganisasjonsnummerDto organisasjonsnummerFraRequest) {
+        LOG.info("ForespørselBehandlingTjenesteImpl: settFerdigeForespørslerForTidligereStpTilUtgått for saksnummer: {}, orgnummer: {} med stp: {}", fagsakSaksnummer, organisasjonsnummerFraRequest, skjæringstidspunktFraRequest );
 
+        //Vi sjekker kun mot FERDIGE forespørsler da fpsak allerede har lukket forespørsler som er UNDER_BEHANDLING
         forespørselTjeneste.finnForespørslerForFagsak(fagsakSaksnummer).stream()
-            .filter(forespørselEntitet -> organisasjonsnummer.orgnr().equals(forespørselEntitet.getOrganisasjonsnummer()))
-            .filter(forespørselEntitet -> !skjæringstidspunkt.equals(forespørselEntitet.getSkjæringstidspunkt()))
+            .filter(forespørselEntitet -> organisasjonsnummerFraRequest.orgnr().equals(forespørselEntitet.getOrganisasjonsnummer()))
+            .filter(forespørselEntitet -> !skjæringstidspunktFraRequest.equals(forespørselEntitet.getSkjæringstidspunkt()))
             .filter(forespørselEntitet -> ForespørselStatus.FERDIG.equals(forespørselEntitet.getStatus()))
             .forEach(forespørselEntitet -> settForespørselTilUtgått(forespørselEntitet, false));
     }

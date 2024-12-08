@@ -16,7 +16,7 @@ import no.nav.familie.inntektsmelding.pip.AltinnTilgangTjeneste;
 import no.nav.familie.inntektsmelding.pip.PipTjeneste;
 import no.nav.familie.inntektsmelding.typer.dto.OrganisasjonsnummerDto;
 import no.nav.vedtak.exception.ManglerTilgangException;
-import no.nav.vedtak.sikkerhet.kontekst.Groups;
+import no.nav.vedtak.sikkerhet.kontekst.AnsattGruppe;
 import no.nav.vedtak.sikkerhet.kontekst.IdentType;
 import no.nav.vedtak.sikkerhet.kontekst.Kontekst;
 import no.nav.vedtak.sikkerhet.kontekst.KontekstHolder;
@@ -68,7 +68,7 @@ public class TilgangTjeneste implements Tilgang {
     @Override
     public void sjekkAtAnsattHarRollenDrift() {
         var kontekst = KontekstHolder.getKontekst();
-        if (erNavAnsatt(kontekst) && ansattHarRollen(kontekst, Groups.DRIFT)) {
+        if (erNavAnsatt(kontekst) && ansattHarRollen(kontekst, AnsattGruppe.DRIFT)) {
             return;
         }
         ikkeTilgang("Ansatt mangler en rolle.");
@@ -76,7 +76,7 @@ public class TilgangTjeneste implements Tilgang {
 
     public void sjekkAtAnsattHarRollenSaksbehandler() {
         var kontekst = KontekstHolder.getKontekst();
-        if (erNavAnsatt(kontekst) && ansattHarRollen(kontekst, Groups.SAKSBEHANDLER)) {
+        if (erNavAnsatt(kontekst) && ansattHarRollen(kontekst, AnsattGruppe.SAKSBEHANDLER)) {
             return;
         }
         ikkeTilgang("Ansatt mangler en rolle.");
@@ -94,7 +94,7 @@ public class TilgangTjeneste implements Tilgang {
         return IdentType.InternBruker.equals(kontekst.getIdentType());
     }
 
-    private boolean ansattHarRollen(Kontekst kontekst, Groups rolle) {
+    private boolean ansattHarRollen(Kontekst kontekst, AnsattGruppe rolle) {
         return kontekst instanceof RequestKontekst requestKontekst && requestKontekst.harGruppe(rolle);
     }
 

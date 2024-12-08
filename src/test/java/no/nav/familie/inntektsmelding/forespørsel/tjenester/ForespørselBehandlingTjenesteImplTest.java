@@ -41,6 +41,7 @@ import no.nav.familie.inntektsmelding.typer.dto.SaksnummerDto;
 import no.nav.familie.inntektsmelding.typer.entitet.AktørIdEntitet;
 import no.nav.vedtak.felles.prosesstask.api.ProsessTaskGruppe;
 import no.nav.vedtak.felles.prosesstask.api.ProsessTaskTjeneste;
+import no.nav.vedtak.felles.prosesstask.api.TaskType;
 import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
 
 @ExtendWith({JpaExtension.class, MockitoExtension.class})
@@ -308,10 +309,10 @@ public class ForespørselBehandlingTjenesteImplTest extends EntityManagerAwareTe
         var taskGruppe = captor.getValue();
         assertThat(taskGruppe.getTasks().size()).isEqualTo(1);
         var taskdata = taskGruppe.getTasks().getFirst().task();
-        assertThat(taskdata.getTaskType()).isEqualTo(OpprettForespørselTask.TASKTYPE);
+        assertThat(taskdata.taskType()).isEqualTo(TaskType.forProsessTask(OpprettForespørselTask.class));
         assertThat(taskdata.getPropertyValue(OpprettForespørselTask.YTELSETYPE)).isEqualTo(YTELSETYPE.toString());
         assertThat(taskdata.getSaksnummer()).isEqualTo(SAKSNUMMMER);
-        assertThat(taskdata.getPropertyValue(OpprettForespørselTask.AKTØR_ID)).isEqualTo(AKTØR_ID);
+        assertThat(taskdata.getAktørId()).isEqualTo(AKTØR_ID);
         assertThat(taskdata.getPropertyValue(OpprettForespørselTask.ORGNR)).isEqualTo(BRREG_ORGNUMMER);
         assertThat(taskdata.getPropertyValue(OpprettForespørselTask.STP)).isEqualTo(SKJÆRINGSTIDSPUNKT.toString());
     }
@@ -345,7 +346,7 @@ public class ForespørselBehandlingTjenesteImplTest extends EntityManagerAwareTe
         var taskGruppe = captor.getValue();
         assertThat(taskGruppe.getTasks().size()).isEqualTo(1);
         var taskdata1 = taskGruppe.getTasks().getFirst().task();
-        assertThat(taskdata1.getTaskType()).isEqualTo(OpprettForespørselTask.TASKTYPE);
+        assertThat(taskdata1.taskType()).isEqualTo(TaskType.forProsessTask(OpprettForespørselTask.class));
     }
 
     @Test
@@ -366,9 +367,9 @@ public class ForespørselBehandlingTjenesteImplTest extends EntityManagerAwareTe
         var taskGruppe = captor.getValue();
         assertThat(taskGruppe.getTasks().size()).isEqualTo(2);
         var taskdata1 = taskGruppe.getTasks().get(0).task();
-        assertThat(taskdata1.getTaskType()).isEqualTo(OpprettForespørselTask.TASKTYPE);
+        assertThat(taskdata1.taskType()).isEqualTo(TaskType.forProsessTask(OpprettForespørselTask.class));
         var taskdata2 = taskGruppe.getTasks().get(1).task();
-        assertThat(taskdata2.getTaskType()).isEqualTo(SettForespørselTilUtgåttTask.TASKTYPE);
+        assertThat(taskdata2.taskType()).isEqualTo(TaskType.forProsessTask(SettForespørselTilUtgåttTask.class));
         assertThat(taskdata2.getPropertyValue(SettForespørselTilUtgåttTask.FORESPØRSEL_UUID)).isEqualTo(forespørselUuid.toString());
     }
 
@@ -389,7 +390,7 @@ public class ForespørselBehandlingTjenesteImplTest extends EntityManagerAwareTe
         var taskGruppe = captor.getValue();
         assertThat(taskGruppe.getTasks().size()).isEqualTo(1);
         var taskdata = taskGruppe.getTasks().getFirst().task();
-        assertThat(taskdata.getTaskType()).isEqualTo(SettForespørselTilUtgåttTask.TASKTYPE);
+        assertThat(taskdata.taskType()).isEqualTo(TaskType.forProsessTask(SettForespørselTilUtgåttTask.class));
         assertThat(taskdata.getPropertyValue(SettForespørselTilUtgåttTask.FORESPØRSEL_UUID)).isEqualTo(forespørselUuid.toString());
     }
 

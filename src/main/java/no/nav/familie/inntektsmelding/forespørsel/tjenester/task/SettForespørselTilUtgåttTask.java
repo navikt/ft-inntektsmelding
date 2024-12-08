@@ -18,10 +18,9 @@ import no.nav.vedtak.felles.prosesstask.api.ProsessTaskData;
 import no.nav.vedtak.felles.prosesstask.api.ProsessTaskHandler;
 
 @ApplicationScoped
-@ProsessTask(value = SettForespørselTilUtgåttTask.TASKTYPE)
+@ProsessTask("forespørsel.utgått")
 public class SettForespørselTilUtgåttTask implements ProsessTaskHandler {
-    public static final String TASKTYPE = "forespørsel.utgått";
-    private static final Logger log = LoggerFactory.getLogger(SettForespørselTilUtgåttTask.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SettForespørselTilUtgåttTask.class);
 
     public static final String FORESPØRSEL_UUID = "forespoerselUuid";
 
@@ -42,13 +41,13 @@ public class SettForespørselTilUtgåttTask implements ProsessTaskHandler {
         Optional<ForespørselEntitet> opt = forespørselBehandlingTjeneste.hentForespørsel(UUID.fromString(forespørselUuid));
 
         if (opt.isEmpty()) {
-            log.warn("Fant ikke forespørsel med uuid {}", forespørselUuid);
+            LOG.warn("Fant ikke forespørsel med uuid {}", forespørselUuid);
             return;
         }
 
         ForespørselEntitet forespørsel = opt.get();
         if (forespørsel.getStatus() == ForespørselStatus.UTGÅTT) {
-            log.info("Forespørsel med uuid {} har allerede status utgått", forespørselUuid);
+            LOG.info("Forespørsel med uuid {} har allerede status utgått", forespørselUuid);
             return;
         }
 

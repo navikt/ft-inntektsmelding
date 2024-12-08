@@ -11,12 +11,12 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class JsonMappingExceptionMapper implements ExceptionMapper<JsonMappingException> {
 
-    private static final Logger log = LoggerFactory.getLogger(JsonMappingExceptionMapper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JsonMappingExceptionMapper.class);
 
     @Override
     public Response toResponse(JsonMappingException exception) {
         var feil = "FIM-252294: JSON-mapping feil";
-        log.warn(feil);
+        LOG.warn(feil);
         return Response.status(Response.Status.BAD_REQUEST).entity(new FeilDto(feil)).type(MediaType.APPLICATION_JSON).build();
     }
 }

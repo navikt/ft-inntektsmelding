@@ -21,8 +21,8 @@ import no.nav.familie.inntektsmelding.pip.AltinnTilgangTjeneste;
 import no.nav.familie.inntektsmelding.pip.PipTjeneste;
 import no.nav.familie.inntektsmelding.typer.dto.OrganisasjonsnummerDto;
 import no.nav.vedtak.exception.ManglerTilgangException;
+import no.nav.vedtak.sikkerhet.kontekst.AnsattGruppe;
 import no.nav.vedtak.sikkerhet.kontekst.BasisKontekst;
-import no.nav.vedtak.sikkerhet.kontekst.Groups;
 import no.nav.vedtak.sikkerhet.kontekst.IdentType;
 import no.nav.vedtak.sikkerhet.kontekst.Kontekst;
 import no.nav.vedtak.sikkerhet.kontekst.KontekstHolder;
@@ -195,7 +195,7 @@ class TilgangTjenesteTest {
     void test_sjekk_om_ansatt_har_rollen_drift_feil_rolle_nok() {
         try (var mockedKontekts = Mockito.mockStatic(KontekstHolder.class)) {
             mockedKontekts.when(KontekstHolder::getKontekst)
-                .thenReturn(fakeRequestKontekts(IdentType.InternBruker, Set.of(Groups.SAKSBEHANDLER, Groups.VEILEDER)));
+                .thenReturn(fakeRequestKontekts(IdentType.InternBruker, Set.of(AnsattGruppe.SAKSBEHANDLER, AnsattGruppe.VEILEDER)));
 
             var ex = assertThrows(ManglerTilgangException.class, () -> tilgangTjeneste.sjekkAtAnsattHarRollenDrift());
             assertThat(ex.getMessage()).contains("Ansatt mangler en rolle.");
@@ -205,12 +205,12 @@ class TilgangTjenesteTest {
     @Test
     void test_sjekk_om_ansatt_har_rollen_drift_ok() {
         try (var mockedKontekts = Mockito.mockStatic(KontekstHolder.class)) {
-            var forventetRolle = Groups.DRIFT;
+            var forventetRolle = AnsattGruppe.DRIFT;
             mockedKontekts.when(KontekstHolder::getKontekst).thenReturn(fakeRequestKontekts(IdentType.InternBruker, Set.of(forventetRolle)));
             assertDoesNotThrow(() -> tilgangTjeneste.sjekkAtAnsattHarRollenDrift());
         }
     }
-    
+
     @Test
     void test_sjekk_om_systembruker_kall_nok_pga_internbruker() {
         try (var mockedKontekts = Mockito.mockStatic(KontekstHolder.class)) {
@@ -243,7 +243,7 @@ class TilgangTjenesteTest {
         return fakeRequestKontekts(identType, Set.of());
     }
 
-    private Kontekst fakeRequestKontekts(IdentType identType, Set<Groups> groups) {
+    private Kontekst fakeRequestKontekts(IdentType identType, Set<AnsattGruppe> groups) {
         return RequestKontekst.forRequest("brukerUid", "brukerUid", identType, fakeOidcToken(OpenIDProvider.TOKENX), UUID.randomUUID(), groups);
     }
 

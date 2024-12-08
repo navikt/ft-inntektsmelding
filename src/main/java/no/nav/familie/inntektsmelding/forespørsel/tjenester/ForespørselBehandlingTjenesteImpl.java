@@ -142,7 +142,6 @@ class ForespørselBehandlingTjenesteImpl implements ForespørselBehandlingTjenes
         }
 
         if (!taskGruppe.getTasks().isEmpty()) {
-            taskGruppe.setCallIdFraEksisterende();
             prosessTaskTjeneste.lagre(taskGruppe);
         } else {
             LOG.info("Ingen oppdatering er nødvendig for saksnr: {}", fagsakSaksnummer);

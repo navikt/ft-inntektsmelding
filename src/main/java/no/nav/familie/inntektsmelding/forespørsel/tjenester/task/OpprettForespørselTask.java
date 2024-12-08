@@ -23,13 +23,11 @@ import no.nav.vedtak.felles.prosesstask.api.ProsessTaskData;
 import no.nav.vedtak.felles.prosesstask.api.ProsessTaskHandler;
 
 @ApplicationScoped
-@ProsessTask(value = OpprettForespørselTask.TASKTYPE)
+@ProsessTask("forespørsel.opprett")
 public class OpprettForespørselTask implements ProsessTaskHandler {
-    public static final String TASKTYPE = "forespørsel.opprett";
-    private static final Logger log = LoggerFactory.getLogger(OpprettForespørselTask.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OpprettForespørselTask.class);
 
     public static final String YTELSETYPE = "ytelsetype";
-    public static final String AKTØR_ID = "aktoerId";
     public static final String ORGNR = "orgnr";
     public static final String STP = "skjaeringstidspunkt";
 
@@ -47,7 +45,7 @@ public class OpprettForespørselTask implements ProsessTaskHandler {
     @Override
     public void doTask(ProsessTaskData prosessTaskData) {
         Ytelsetype ytelsetype = Ytelsetype.valueOf(prosessTaskData.getPropertyValue(YTELSETYPE));
-        AktørIdEntitet aktørId = new AktørIdEntitet(prosessTaskData.getPropertyValue(AKTØR_ID));
+        AktørIdEntitet aktørId = new AktørIdEntitet(prosessTaskData.getAktørId());
         SaksnummerDto fagsakSaksnummer = new SaksnummerDto(prosessTaskData.getSaksnummer());
         OrganisasjonsnummerDto organisasjonsnummer = new OrganisasjonsnummerDto(prosessTaskData.getPropertyValue(ORGNR));
         LocalDate skjæringstidspunkt = LocalDate.parse(prosessTaskData.getPropertyValue(STP));
@@ -55,7 +53,7 @@ public class OpprettForespørselTask implements ProsessTaskHandler {
         List<ForespørselEntitet> eksisterendeForespørsler = forespørselBehandlingTjeneste.hentForespørslerForFagsak(fagsakSaksnummer, organisasjonsnummer, skjæringstidspunkt);
 
         if (eksisterendeForespørsler.stream().anyMatch(eksisterende -> !eksisterende.getStatus().equals(ForespørselStatus.UTGÅTT))) {
-            log.info("Forespørsel finnes allerede, orgnr: {}, stp: {}, saksnr: {}, ytelse: {}",
+            LOG.info("Forespørsel finnes allerede, orgnr: {}, stp: {}, saksnr: {}, ytelse: {}",
                 organisasjonsnummer.orgnr(), skjæringstidspunkt, fagsakSaksnummer.saksnr(), ytelsetype);
             return;
         }
@@ -74,7 +72,7 @@ public class OpprettForespørselTask implements ProsessTaskHandler {
                                               LocalDate skjæringstidspunkt) {
         var taskdata = ProsessTaskData.forProsessTask(OpprettForespørselTask.class);
         taskdata.setProperty(YTELSETYPE, ytelsetype.name());
-        taskdata.setProperty(AKTØR_ID, aktørId.getAktørId());
+        taskdata.setAktørId(aktørId.getAktørId());
         taskdata.setSaksnummer(fagsakSaksnummer.saksnr());
         taskdata.setProperty(ORGNR, organisasjon.orgnr());
         taskdata.setProperty(STP, skjæringstidspunkt.toString());

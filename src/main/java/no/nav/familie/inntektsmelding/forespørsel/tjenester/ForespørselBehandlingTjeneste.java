@@ -56,6 +56,8 @@ public interface ForespørselBehandlingTjeneste {
 
     void settForespørselTilUtgått(ForespørselEntitet eksisterendeForespørsel, boolean skalOppdatereArbeidsgiverNotifikasjon);
 
+    void gjenåpneForespørsel(ForespørselEntitet eksisterendeForespørsel);
+
     void opprettNyBeskjedMedEksternVarsling(SaksnummerDto fagsakSaksnummer,
                                             OrganisasjonsnummerDto organisasjonsnummer);
 }

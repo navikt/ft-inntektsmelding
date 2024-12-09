@@ -108,6 +108,8 @@ public class ForespørselRest {
         LOG.info("Mottok forespørsel om oppdatering av inntektsmeldingoppgaver på fagsakSaksnummer {}", request.fagsakSaksnummer());
         sjekkErSystemkall();
 
+        //TODO valider at request ikke har duplikater
+
         forespørselBehandlingTjeneste.oppdaterForespørsler(
             KodeverkMapper.mapYtelsetype(request.ytelsetype()),
             new AktørIdEntitet(request.aktørId().id()),

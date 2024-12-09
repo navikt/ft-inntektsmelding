@@ -62,7 +62,6 @@ public class OpprettForespørselTask implements ProsessTaskHandler {
         // K9 trenger ikke førsteUttaksdato, setter alltid null her
         forespørselBehandlingTjeneste.opprettForespørsel(ytelsetype, aktørId, fagsakSaksnummer, organisasjonsnummer, skjæringstidspunkt, null, tilleggsinfo);
         MetrikkerTjeneste.loggForespørselOpprettet(ytelsetype);
-
     }
 
     public static ProsessTaskData lagTaskData(Ytelsetype ytelsetype,

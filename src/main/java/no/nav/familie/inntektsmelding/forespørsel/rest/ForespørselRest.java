@@ -2,6 +2,7 @@ package no.nav.familie.inntektsmelding.forespørsel.rest;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -75,7 +76,7 @@ public class ForespørselRest {
                 MetrikkerTjeneste.loggForespørselOpprettet(KodeverkMapper.mapYtelsetype(request.ytelsetype()));
             }
             return Response.ok(new OpprettForespørselResponse(bleForespørselOpprettet)).build();
-        } else if (request.organisasjonsnumre() != null){
+        } else if (request.organisasjonsnumre() != null) {
             if (request.organisasjonsnumre().isEmpty()) {
                 return Response.status(Response.Status.NO_CONTENT).build();
             }
@@ -108,6 +109,15 @@ public class ForespørselRest {
         LOG.info("Mottok forespørsel om oppdatering av inntektsmeldingoppgaver på fagsakSaksnummer {}", request.fagsakSaksnummer());
         sjekkErSystemkall();
 
+        var unikeForespørsler = new HashSet<>();
+        request.forespørsler().forEach(forespørsel ->
+            unikeForespørsler.add(new OppdaterForespørselDto(forespørsel.skjæringstidspunkt(), forespørsel.orgnr(), false, null))
+        );
+
+        if (unikeForespørsler.size() != request.forespørsler().size()) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
         forespørselBehandlingTjeneste.oppdaterForespørsler(
             KodeverkMapper.mapYtelsetype(request.ytelsetype()),
             new AktørIdEntitet(request.aktørId().id()),
@@ -136,6 +146,7 @@ public class ForespørselRest {
     /**
      * Tjeneste for å opprette en ny beskjed på en eksisterende forespørsel.
      * Vil opprette ny beskjed som er synlig under saken i min side arbeidsgiver,samt sende ut et eksternt varsel
+     *
      * @param request
      * @return
      */

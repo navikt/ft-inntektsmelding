@@ -148,21 +148,6 @@ public class ForespørselRest {
         return Response.ok().build();
     }
 
-    // Dette endpointet brukes til verdikjedetesting, ikke i bruk i prod
-    @GET
-    @Path("/list/{saksnummer}")
-    @Tilgangskontrollert
-    public Response finnForespoerselForSaksnummer(
-        @Parameter(description = "Saksnummer det skal listes ut forespørsler for") @Valid @NotNull
-        @PathParam("saksnummer") SaksnummerDto saksnummer) {
-        if(!(Environment.current().isLocal() || Environment.current().isVTP())) {
-            throw new RuntimeException("Endepunkt for listing av forespørsler per sak skal kun brukes for verdikjedetesting, ikke i produksjon");
-        }
-        LOG.info("Mottok forespørsel om uuid for forespørsel for sak {}", saksnummer);
-        var forespørsler = forespørselBehandlingTjeneste.finnForespørslerForFagsak(saksnummer);
-        return Response.ok(new ListForespørslerResponse(forespørsler)).build();
-    }
-
     record ForespørselDto(UUID uuid, OrganisasjonsnummerDto organisasjonsnummer, LocalDate skjæringstidspunkt, AktørIdDto brukerAktørId,
                           YtelseTypeDto ytelseType) {
     }

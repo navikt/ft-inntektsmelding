@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import jakarta.ws.rs.ApplicationPath;
 
+import no.nav.familie.inntektsmelding.forespørsel.rest.ForespørselVtpRest;
 import no.nav.familie.inntektsmelding.forvaltning.OppgaverForvaltningRestTjeneste;
 
 import org.glassfish.jersey.server.ResourceConfig;
@@ -86,7 +87,8 @@ public class ForvaltningApiConfig extends ResourceConfig {
     private Set<Class<?>> getApplicationClasses() {
         return Set.of(ProsessTaskRestTjeneste.class,
             FpDokgenRestTjeneste.class,
-            OppgaverForvaltningRestTjeneste.class);
+            OppgaverForvaltningRestTjeneste.class,
+            ForespørselVtpRest.class);
     }
 
     private Map<String, Object> getApplicationProperties() {

@@ -3,23 +3,17 @@ package no.nav.familie.inntektsmelding.forespørsel.rest;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import io.swagger.v3.oas.annotations.Parameter;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
-import no.nav.foreldrepenger.konfig.Environment;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +28,6 @@ import no.nav.familie.inntektsmelding.typer.dto.AktørIdDto;
 import no.nav.familie.inntektsmelding.typer.dto.ForespørselResultat;
 import no.nav.familie.inntektsmelding.typer.dto.KodeverkMapper;
 import no.nav.familie.inntektsmelding.typer.dto.OrganisasjonsnummerDto;
-import no.nav.familie.inntektsmelding.typer.dto.SaksnummerDto;
 import no.nav.familie.inntektsmelding.typer.dto.YtelseTypeDto;
 import no.nav.familie.inntektsmelding.typer.entitet.AktørIdEntitet;
 

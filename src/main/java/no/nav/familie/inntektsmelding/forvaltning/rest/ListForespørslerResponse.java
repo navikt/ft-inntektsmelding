@@ -1,4 +1,4 @@
-package no.nav.familie.inntektsmelding.forespørsel.rest;
+package no.nav.familie.inntektsmelding.forvaltning.rest;
 
 import java.util.List;
 

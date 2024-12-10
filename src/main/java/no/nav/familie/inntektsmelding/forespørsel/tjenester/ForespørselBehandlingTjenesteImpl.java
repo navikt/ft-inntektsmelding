@@ -11,7 +11,7 @@ import java.util.UUID;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
-import no.nav.familie.inntektsmelding.forespørsel.rest.InntektsmeldingForespørselDto;
+import no.nav.familie.inntektsmelding.forvaltning.rest.InntektsmeldingForespørselDto;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

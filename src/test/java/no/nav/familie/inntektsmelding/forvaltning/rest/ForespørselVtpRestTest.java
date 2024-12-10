@@ -1,6 +1,6 @@
-package no.nav.familie.inntektsmelding.forespørsel.rest;
+package no.nav.familie.inntektsmelding.forvaltning.rest;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;

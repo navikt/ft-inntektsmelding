@@ -13,6 +13,9 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
+import no.nav.familie.inntektsmelding.forespørsel.modell.ForespørselEntitet;
+import no.nav.familie.inntektsmelding.forvaltning.rest.InntektsmeldingForespørselDto;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -504,6 +507,40 @@ public class ForespørselBehandlingTjenesteImplTest extends EntityManagerAwareTe
         forespørselRepository.ferdigstillForespørsel(SAK_ID);
 
         assertThrows(IllegalStateException.class, () -> forespørselBehandlingTjeneste.opprettNyBeskjedMedEksternVarsling(new SaksnummerDto(SAKSNUMMMER), new OrganisasjonsnummerDto(BRREG_ORGNUMMER)));
+    }
+
+    @Test
+    void skal_returnere_liste_av_inntektsmeldingdto_for_forespørsler() {
+
+        var forespørsel1sak1 = new ForespørselEntitet(BRREG_ORGNUMMER, LocalDate.of(2025, 1, 1), new AktørIdEntitet(AKTØR_ID), Ytelsetype.FORELDREPENGER, SAK_ID, LocalDate.of(2025, 1, 1));
+        var forespørsel1sak2 = new ForespørselEntitet(BRREG_ORGNUMMER, LocalDate.of(2025, 2, 1), new AktørIdEntitet(AKTØR_ID), Ytelsetype.FORELDREPENGER, SAK_ID_2 , LocalDate.of(2025, 2, 1));
+        var forespørsel2sak1 = new ForespørselEntitet(BRREG_ORGNUMMER, LocalDate.of(2025, 3, 1), new AktørIdEntitet(AKTØR_ID), Ytelsetype.FORELDREPENGER, SAK_ID, LocalDate.of(2025, 3, 1));
+        var forespørsel2sak2 = new ForespørselEntitet(BRREG_ORGNUMMER, LocalDate.of(2025, 4, 1), new AktørIdEntitet(AKTØR_ID), Ytelsetype.FORELDREPENGER, SAK_ID_2, LocalDate.of(2025, 4, 1));
+
+        getEntityManager().persist(forespørsel1sak1);
+        getEntityManager().persist(forespørsel1sak2);
+        getEntityManager().persist(forespørsel2sak1);
+        getEntityManager().persist(forespørsel2sak2);
+        getEntityManager().flush();
+
+        List<InntektsmeldingForespørselDto> inntektsmeldingForespørselDtos = forespørselBehandlingTjeneste.finnForespørslerForFagsak(new SaksnummerDto(SAK_ID));
+
+        assertThat(inntektsmeldingForespørselDtos.size()).isEqualTo(2);
+        var dto1 = inntektsmeldingForespørselDtos.stream().filter(forespørsel -> forespørsel.skjæringstidspunkt().equals(forespørsel1sak1.getSkjæringstidspunkt())).findAny().get();
+        var dto2 = inntektsmeldingForespørselDtos.stream().filter(forespørsel -> forespørsel.skjæringstidspunkt().equals(forespørsel2sak1.getSkjæringstidspunkt())).findAny().get();
+
+        assertThat(dto1.aktørid()).isEqualTo(forespørsel1sak1.getAktørId().getAktørId());
+        assertThat(dto1.skjæringstidspunkt()).isEqualTo(forespørsel1sak1.getSkjæringstidspunkt());
+        assertThat(dto1.ytelsetype()).isEqualTo(forespørsel1sak1.getYtelseType().toString());
+        assertThat(dto1.uuid()).isEqualTo(forespørsel1sak1.getUuid());
+        assertThat(dto1.arbeidsgiverident()).isEqualTo(forespørsel1sak1.getOrganisasjonsnummer());
+
+        assertThat(dto2.aktørid()).isEqualTo(forespørsel2sak1.getAktørId().getAktørId());
+        assertThat(dto2.skjæringstidspunkt()).isEqualTo(forespørsel2sak1.getSkjæringstidspunkt());
+        assertThat(dto2.ytelsetype()).isEqualTo(forespørsel2sak1.getYtelseType().toString());
+        assertThat(dto2.uuid()).isEqualTo(forespørsel2sak1.getUuid());
+        assertThat(dto2.arbeidsgiverident()).isEqualTo(forespørsel2sak1.getOrganisasjonsnummer());
+
     }
 
     private void clearHibernateCache() {

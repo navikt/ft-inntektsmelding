@@ -19,6 +19,8 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import no.nav.foreldrepenger.konfig.Environment;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,18 +59,6 @@ public class ForespørselRest {
     public ForespørselRest(ForespørselBehandlingTjeneste forespørselBehandlingTjeneste, Tilgang tilgang) {
         this.forespørselBehandlingTjeneste = forespørselBehandlingTjeneste;
         this.tilgang = tilgang;
-    }
-
-    // Dette endpointet brukes til verdikjedetesting, ikke i bruk i prod
-    @GET
-    @Path("/list/{saksnummer}")
-    @Tilgangskontrollert
-    public Response finnForespoerselForSaksnummer(
-        @Parameter(description = "Saksnummer det skal listes ut forespørsler for") @Valid @NotNull
-        @PathParam("saksnummer") SaksnummerDto saksnummer) {
-        LOG.info("Mottok forespørsel om uuid for forespørsel for sak {}", saksnummer);
-        var forespørsler = forespørselBehandlingTjeneste.finnForespørslerForFagsak(saksnummer);
-        return Response.ok(new ListForespørslerResponse(forespørsler)).build();
     }
 
     @POST
@@ -156,6 +146,21 @@ public class ForespørselRest {
 
         forespørselBehandlingTjeneste.settForespørselTilUtgått(request.fagsakSaksnummer(), request.orgnummer(), request.skjæringstidspunkt());
         return Response.ok().build();
+    }
+
+    // Dette endpointet brukes til verdikjedetesting, ikke i bruk i prod
+    @GET
+    @Path("/list/{saksnummer}")
+    @Tilgangskontrollert
+    public Response finnForespoerselForSaksnummer(
+        @Parameter(description = "Saksnummer det skal listes ut forespørsler for") @Valid @NotNull
+        @PathParam("saksnummer") SaksnummerDto saksnummer) {
+        if(!(Environment.current().isLocal() || Environment.current().isVTP())) {
+            throw new RuntimeException("Endepunkt for listing av forespørsler per sak skal kun brukes for verdikjedetesting, ikke i produksjon");
+        }
+        LOG.info("Mottok forespørsel om uuid for forespørsel for sak {}", saksnummer);
+        var forespørsler = forespørselBehandlingTjeneste.finnForespørslerForFagsak(saksnummer);
+        return Response.ok(new ListForespørslerResponse(forespørsler)).build();
     }
 
     record ForespørselDto(UUID uuid, OrganisasjonsnummerDto organisasjonsnummer, LocalDate skjæringstidspunkt, AktørIdDto brukerAktørId,

@@ -21,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import no.nav.familie.inntektsmelding.forespørsel.modell.ForespørselEntitet;
 import no.nav.familie.inntektsmelding.forespørsel.tjenester.ForespørselBehandlingTjeneste;
+import no.nav.familie.inntektsmelding.koder.ForespørselStatus;
 import no.nav.familie.inntektsmelding.koder.Ytelsetype;
 import no.nav.familie.inntektsmelding.server.tilgangsstyring.Tilgang;
 import no.nav.familie.inntektsmelding.typer.dto.AktørIdDto;
@@ -157,7 +158,7 @@ class ForespørselRestTest {
         var expectedBruker = new AktørIdDto("123342532424");
         var expectedSkjæringstidspunkt = LocalDate.now();
         var dto = new ForespørselRest.ForespørselDto(UUID.randomUUID(), expectedOrg, expectedSkjæringstidspunkt, expectedBruker,
-            YtelseTypeDto.SVANGERSKAPSPENGER);
+            YtelseTypeDto.SVANGERSKAPSPENGER, ForespørselStatus.UNDER_BEHANDLING);
 
         var ser = DefaultJsonMapper.toJson(dto);
         var des = DefaultJsonMapper.fromJson(ser, ForespørselRest.ForespørselDto.class);

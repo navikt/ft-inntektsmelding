@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public record SaksnummerDto(
     @JsonValue @NotNull @Pattern(regexp = REGEXP, message = "Saksnummer [${validatedValue}] matcher ikke tillatt pattern [{regexp}]") String saksnr) {
 
-    private static final String REGEXP = "^[\\p{Alnum}]+$";
+    public static final String REGEXP = "^[\\p{Alnum}]+$";
 
     @Override
     public boolean equals(Object obj) {

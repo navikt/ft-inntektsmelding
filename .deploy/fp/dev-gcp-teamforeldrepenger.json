@@ -14,7 +14,8 @@
     "https://fpinntektsmelding.intern.dev.nav.no"
   ],
   "groups": [
-    "f1b82579-c5b5-4617-9673-8ace5ff67f63"
+    "f1b82579-c5b5-4617-9673-8ace5ff67f63",
+    "27e77109-fef2-48ce-a174-269074490353"
   ],
   "db": {
     "dbTier": "db-f1-micro",

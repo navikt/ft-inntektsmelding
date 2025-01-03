@@ -27,7 +27,7 @@ class InntektsmeldingOverstyringMapper {
             .medOpprettetAv(dto.opprettetAv())
             .medMånedInntekt(dto.inntekt())
             .medMånedRefusjon(dto.refusjon())
-            .medRefusjonOpphørsdato(finnOpphørsdato(dto.refusjonsendringer()).orElse(Tid.TIDENES_ENDE))
+            .medRefusjonOpphørsdato(finnOpphørsdato(dto.refusjonsendringer()).orElse(null))
             .medStartDato(dto.startdato())
             .medYtelsetype(KodeverkMapper.mapYtelsetype(dto.ytelse()))
             .medBortfaltNaturalytelser(mapBortfalteNaturalytelser(dto.bortfaltNaturalytelsePerioder()))

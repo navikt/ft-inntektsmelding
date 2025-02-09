@@ -18,9 +18,9 @@ import no.nav.familie.inntektsmelding.metrikker.MetrikkerTjeneste;
 import no.nav.familie.inntektsmelding.typer.dto.OrganisasjonsnummerDto;
 import no.nav.familie.inntektsmelding.typer.dto.SaksnummerDto;
 import no.nav.familie.inntektsmelding.typer.entitet.AktørIdEntitet;
-import no.nav.vedtak.felles.prosesstask.api.ProsessTask;
-import no.nav.vedtak.felles.prosesstask.api.ProsessTaskData;
-import no.nav.vedtak.felles.prosesstask.api.ProsessTaskHandler;
+import no.nav.k9.prosesstask.api.ProsessTask;
+import no.nav.k9.prosesstask.api.ProsessTaskData;
+import no.nav.k9.prosesstask.api.ProsessTaskHandler;
 
 @ApplicationScoped
 @ProsessTask("forespørsel.opprett")

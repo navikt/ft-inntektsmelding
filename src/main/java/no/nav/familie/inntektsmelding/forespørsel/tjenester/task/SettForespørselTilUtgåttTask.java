@@ -13,9 +13,9 @@ import no.nav.familie.inntektsmelding.forespørsel.modell.ForespørselEntitet;
 import no.nav.familie.inntektsmelding.forespørsel.tjenester.ForespørselBehandlingTjeneste;
 import no.nav.familie.inntektsmelding.koder.ForespørselStatus;
 import no.nav.familie.inntektsmelding.metrikker.MetrikkerTjeneste;
-import no.nav.vedtak.felles.prosesstask.api.ProsessTask;
-import no.nav.vedtak.felles.prosesstask.api.ProsessTaskData;
-import no.nav.vedtak.felles.prosesstask.api.ProsessTaskHandler;
+import no.nav.k9.prosesstask.api.ProsessTask;
+import no.nav.k9.prosesstask.api.ProsessTaskData;
+import no.nav.k9.prosesstask.api.ProsessTaskHandler;
 
 @ApplicationScoped
 @ProsessTask("forespørsel.utgått")

@@ -15,7 +15,7 @@ import org.mockito.Mockito;
 import no.nav.familie.inntektsmelding.forespørsel.modell.ForespørselEntitet;
 import no.nav.familie.inntektsmelding.forespørsel.tjenester.ForespørselBehandlingTjeneste;
 import no.nav.familie.inntektsmelding.koder.ForespørselStatus;
-import no.nav.vedtak.felles.prosesstask.api.ProsessTaskData;
+import no.nav.k9.prosesstask.api.ProsessTaskData;
 
 class SettForespørselTilUtgåttTaskTest {
 

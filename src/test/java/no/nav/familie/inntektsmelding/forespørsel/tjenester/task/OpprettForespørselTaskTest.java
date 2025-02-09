@@ -17,7 +17,7 @@ import no.nav.familie.inntektsmelding.koder.Ytelsetype;
 import no.nav.familie.inntektsmelding.typer.dto.OrganisasjonsnummerDto;
 import no.nav.familie.inntektsmelding.typer.dto.SaksnummerDto;
 import no.nav.familie.inntektsmelding.typer.entitet.AktørIdEntitet;
-import no.nav.vedtak.felles.prosesstask.api.ProsessTaskData;
+import no.nav.k9.prosesstask.api.ProsessTaskData;
 
 class OpprettForespørselTaskTest {
 

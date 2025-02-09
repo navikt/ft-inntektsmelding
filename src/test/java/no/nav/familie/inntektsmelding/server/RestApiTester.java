@@ -11,7 +11,7 @@ import jakarta.ws.rs.core.Application;
 
 import no.nav.familie.inntektsmelding.server.app.api.ApiConfig;
 import no.nav.familie.inntektsmelding.server.app.forvaltning.ForvaltningApiConfig;
-import no.nav.vedtak.felles.prosesstask.rest.ProsessTaskRestTjeneste;
+import no.nav.k9.prosesstask.rest.ProsessTaskRestTjeneste;
 
 public class RestApiTester {
 

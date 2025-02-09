@@ -16,9 +16,9 @@ import no.nav.familie.inntektsmelding.forespørsel.tjenester.ForespørselBehandl
 import no.nav.familie.inntektsmelding.imdialog.rest.InntektsmeldingResponseDto;
 import no.nav.familie.inntektsmelding.imdialog.tjenester.InntektsmeldingTjeneste;
 import no.nav.familie.inntektsmelding.koder.ForespørselStatus;
-import no.nav.vedtak.felles.prosesstask.api.ProsessTask;
-import no.nav.vedtak.felles.prosesstask.api.ProsessTaskData;
-import no.nav.vedtak.felles.prosesstask.api.ProsessTaskHandler;
+import no.nav.k9.prosesstask.api.ProsessTask;
+import no.nav.k9.prosesstask.api.ProsessTaskData;
+import no.nav.k9.prosesstask.api.ProsessTaskHandler;
 
 @ApplicationScoped
 @ProsessTask("forespørsel.gjenåpne")

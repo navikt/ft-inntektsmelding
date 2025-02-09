@@ -9,7 +9,7 @@ import no.nav.familie.inntektsmelding.koder.ForespørselStatus;
 import no.nav.familie.inntektsmelding.typer.dto.AktørIdDto;
 import no.nav.familie.inntektsmelding.typer.dto.ArbeidsgiverDto;
 import no.nav.familie.inntektsmelding.typer.dto.YtelseTypeDto;
-import no.nav.vedtak.felles.prosesstask.api.ProsessTaskData;
+import no.nav.k9.prosesstask.api.ProsessTaskData;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

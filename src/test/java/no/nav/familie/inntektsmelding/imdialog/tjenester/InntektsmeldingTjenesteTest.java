@@ -43,7 +43,7 @@ import no.nav.familie.inntektsmelding.typer.dto.MånedslønnStatus;
 import no.nav.familie.inntektsmelding.typer.dto.OrganisasjonsnummerDto;
 import no.nav.familie.inntektsmelding.typer.dto.YtelseTypeDto;
 import no.nav.familie.inntektsmelding.typer.entitet.AktørIdEntitet;
-import no.nav.vedtak.felles.prosesstask.api.ProsessTaskTjeneste;
+import no.nav.k9.prosesstask.api.ProsessTaskTjeneste;
 import no.nav.vedtak.sikkerhet.kontekst.IdentType;
 import no.nav.vedtak.sikkerhet.kontekst.KontekstHolder;
 import no.nav.vedtak.sikkerhet.kontekst.RequestKontekst;

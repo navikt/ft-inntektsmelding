@@ -15,7 +15,7 @@ import no.nav.familie.inntektsmelding.database.JpaExtension;
 import no.nav.familie.inntektsmelding.koder.Endringsårsak;
 import no.nav.familie.inntektsmelding.koder.Ytelsetype;
 import no.nav.familie.inntektsmelding.typer.entitet.AktørIdEntitet;
-import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
+import no.nav.k9.felles.testutilities.db.EntityManagerAwareTest;
 import no.nav.vedtak.konfig.Tid;
 
 @ExtendWith(JpaExtension.class)

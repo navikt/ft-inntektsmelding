@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import no.nav.familie.inntektsmelding.database.JpaExtension;
-import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
+import no.nav.k9.felles.testutilities.db.EntityManagerAwareTest;
 
 /**
  * Tester at alle migreringer følger standarder for navn og god praksis.

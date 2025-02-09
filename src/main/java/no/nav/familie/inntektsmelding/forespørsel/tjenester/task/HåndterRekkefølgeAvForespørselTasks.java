@@ -1,7 +1,6 @@
 package no.nav.familie.inntektsmelding.forespørsel.tjenester.task;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -12,13 +11,13 @@ import jakarta.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import no.nav.vedtak.felles.prosesstask.api.ProsessTaskData;
-import no.nav.vedtak.felles.prosesstask.api.ProsessTaskGruppe;
-import no.nav.vedtak.felles.prosesstask.api.ProsessTaskLifecycleObserver;
-import no.nav.vedtak.felles.prosesstask.api.ProsessTaskStatus;
-import no.nav.vedtak.felles.prosesstask.api.ProsessTaskVeto;
-import no.nav.vedtak.felles.prosesstask.api.TaskType;
-import no.nav.vedtak.felles.prosesstask.impl.ProsessTaskRepository;
+import no.nav.k9.prosesstask.api.ProsessTaskData;
+import no.nav.k9.prosesstask.api.ProsessTaskGruppe;
+import no.nav.k9.prosesstask.api.ProsessTaskLifecycleObserver;
+import no.nav.k9.prosesstask.api.ProsessTaskStatus;
+import no.nav.k9.prosesstask.api.ProsessTaskTjeneste;
+import no.nav.k9.prosesstask.api.ProsessTaskVeto;
+import no.nav.k9.prosesstask.api.TaskType;
 
 @ApplicationScoped
 public class HåndterRekkefølgeAvForespørselTasks implements ProsessTaskLifecycleObserver {
@@ -32,15 +31,15 @@ public class HåndterRekkefølgeAvForespørselTasks implements ProsessTaskLifecy
         TaskType.forProsessTask(SettForespørselTilUtgåttTask.class),
         TaskType.forProsessTask(GjenåpneForespørselTask.class));
 
-    private ProsessTaskRepository prosessTaskRepository;
+    private ProsessTaskTjeneste prosessTaskTjeneste;
 
     HåndterRekkefølgeAvForespørselTasks() {
         //CDI
     }
 
     @Inject
-    public HåndterRekkefølgeAvForespørselTasks(ProsessTaskRepository prosessTaskRepository) {
-        this.prosessTaskRepository = prosessTaskRepository;
+    public HåndterRekkefølgeAvForespørselTasks(ProsessTaskTjeneste prosessTaskTjeneste) {
+        this.prosessTaskTjeneste = prosessTaskTjeneste;
     }
 
     @Override
@@ -53,8 +52,8 @@ public class HåndterRekkefølgeAvForespørselTasks implements ProsessTaskLifecy
                 throw new IllegalArgumentException("Task av type " + OPPRETT.value() + " mangler saksnummer");
             }
 
-            //TODO bytt til en mer spesifikk query når vi er over på k9-prosesstask
-            Optional<ProsessTaskData> blokkerendeTask = prosessTaskRepository.finnAlle(List.of(ProsessTaskStatus.KLAR))
+            //TODO bytt til en mer spesifikk query
+            Optional<ProsessTaskData> blokkerendeTask = prosessTaskTjeneste.finnAlle(ProsessTaskStatus.KLAR)
                 .stream()
                 .filter(task -> BLOKKERENDE.contains(task.taskType()))
                 .filter(task -> Objects.equals(task.getSaksnummer(), fagsakSaksnummer))

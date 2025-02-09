@@ -4,7 +4,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import no.nav.foreldrepenger.konfig.Environment;
-import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareExtension;
+import no.nav.k9.felles.testutilities.db.EntityManagerAwareExtension;
 
 public class JpaExtension extends EntityManagerAwareExtension {
     private static final String TEST_DB_CONTAINER = Environment.current().getProperty("testcontainer.test.db", String.class, "postgres:17-alpine");

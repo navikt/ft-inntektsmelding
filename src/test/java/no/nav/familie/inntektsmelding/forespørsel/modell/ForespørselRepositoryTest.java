@@ -10,7 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import no.nav.familie.inntektsmelding.database.JpaExtension;
 import no.nav.familie.inntektsmelding.koder.Ytelsetype;
-import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
+import no.nav.k9.felles.testutilities.db.EntityManagerAwareTest;
 
 @ExtendWith(JpaExtension.class)
 class ForespørselRepositoryTest extends EntityManagerAwareTest {

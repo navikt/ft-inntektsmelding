@@ -28,5 +28,6 @@
     }
   ],
   "devOnly": "true",
-  "driftGruppeOid": "0bc9661c-975c-4adb-86d1-a97172490662"
+  "driftGruppeOid": "0bc9661c-975c-4adb-86d1-a97172490662",
+  "saksbehandlerGruppeOid": "93e8903d-5c3f-4cbe-929e-0afeb22dec73"
 }

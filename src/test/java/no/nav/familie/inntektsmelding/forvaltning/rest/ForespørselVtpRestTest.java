@@ -2,13 +2,15 @@ package no.nav.familie.inntektsmelding.forvaltning.rest;
 
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
 
-
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -18,14 +20,21 @@ import no.nav.foreldrepenger.konfig.Environment;
 @ExtendWith(MockitoExtension.class)
 class ForespørselVtpRestTest {
 
-    private static final ForespørselVtpRest forespørselVtpRest = new ForespørselVtpRest(mock(ForespørselBehandlingTjeneste.class,
-        Answers.CALLS_REAL_METHODS));
+    @Mock
+    private ForespørselBehandlingTjeneste forespørselBehandlingTjeneste;
 
+    private ForespørselVtpRest forespørselVtpRest;
+
+    @BeforeEach
+    void setUp() {
+        forespørselVtpRest = new ForespørselVtpRest(forespørselBehandlingTjeneste);
+    }
 
     @Test
     void skal_kaste_exception_om_i_prod() {
         try (var environment = Mockito.mockStatic(Environment.class, Answers.RETURNS_DEEP_STUBS)) {
             assertThrows(RuntimeException.class, () -> forespørselVtpRest.finnForespoerselForSaksnummer(null));
+            verifyNoInteractions(forespørselBehandlingTjeneste);
         }
     }
 

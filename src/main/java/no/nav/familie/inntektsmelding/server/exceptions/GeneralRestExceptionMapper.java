@@ -25,7 +25,8 @@ public class GeneralRestExceptionMapper implements ExceptionMapper<Throwable> {
     public Response toResponse(Throwable feil) {
         try {
             if (feil instanceof ManglerTilgangException) {
-                LOG.warn("Tilgangsfeil", getExceptionMelding(feil));
+                String exceptionMelding = getExceptionMelding(feil);
+                LOG.warn("Tilgangsfeil: {}", exceptionMelding);
                 return ikkeTilgang("Mangler tilgang");
             }
             loggTilApplikasjonslogg(feil);
@@ -47,7 +48,7 @@ public class GeneralRestExceptionMapper implements ExceptionMapper<Throwable> {
     }
 
     private static void loggTilApplikasjonslogg(Throwable feil) {
-        var melding = "Fikk uventet feil: " + getExceptionMelding(feil);
+        String melding = "Fikk uventet feil: " + getExceptionMelding(feil);
         LOG.warn(melding, feil);
     }
 

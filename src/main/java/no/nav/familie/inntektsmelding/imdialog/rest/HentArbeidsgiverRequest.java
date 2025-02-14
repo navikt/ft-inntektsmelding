@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 
 import no.nav.familie.inntektsmelding.integrasjoner.person.PersonIdent;
 import no.nav.familie.inntektsmelding.koder.Ytelsetype;
-import no.nav.familie.inntektsmelding.typer.dto.OrganisasjonsnummerDto;
 
 import java.time.LocalDate;
 

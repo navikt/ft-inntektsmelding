@@ -45,7 +45,7 @@ import no.nav.vedtak.felles.prosesstask.api.TaskType;
 import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
 
 @ExtendWith({JpaExtension.class, MockitoExtension.class})
-class ForespørselBehandlingTjenesteImplTest extends EntityManagerAwareTest {
+class ForespørselBehandlingTjenesteTest extends EntityManagerAwareTest {
 
     private static final String BRREG_ORGNUMMER = "974760673";
     private static final String AKTØR_ID = "1234567891234";
@@ -73,7 +73,7 @@ class ForespørselBehandlingTjenesteImplTest extends EntityManagerAwareTest {
     @BeforeEach
     void setUp() {
         this.forespørselRepository = new ForespørselRepository(getEntityManager());
-        this.forespørselBehandlingTjeneste = new ForespørselBehandlingTjenesteImpl(new ForespørselTjeneste(forespørselRepository),
+        this.forespørselBehandlingTjeneste = new ForespørselBehandlingTjeneste(new ForespørselTjeneste(forespørselRepository),
             arbeidsgiverNotifikasjon,
             personTjeneste,
             prosessTaskTjeneste,
